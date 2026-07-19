@@ -198,7 +198,9 @@ El repositorio centraliza su orquestación y validación mediante flujos automat
     └── code-analysis.yml       # Escaneo estático de calidad, tamaño y seguridad
 ```
 
-*   **Verificación de Modularidad (Límite de 300 líneas):** El analizador estático recopila periódicamente todos los archivos que exceden este umbral, estimulando al desarrollador a delegar lógicas complejas en componentes desacoplados dentro del paquete `com.example.ui.screens` o clases auxiliares del motor.
-*   **Aislamiento de Secretos de Compilación:** Evitamos almacenar credenciales hardcodeadas (como claves de la API de Gemini) rastreando fugas con expresiones regulares en archivos de código antes de cada integración de código.
-*   **Escalabilidad de Automatizaciones Futuras:** La arquitectura actual está lista para incorporar análisis sintácticos de linting y ejecuciones de suite de pruebas unitarias locales automatizadas sobre JVM de manera asíncrona.
+*   **Verificación de Modularidad (Límite de 300 líneas):** El analizador estático recopila de manera modular todos los archivos que exceden este umbral en el reporte `1_line_limits_report.txt`, estimulando al desarrollador a delegar lógicas complejas en componentes desacoplados.
+*   **Aislamiento de Secretos de Compilación:** Evitamos almacenar credenciales hardcodeadas (como claves de la API de Gemini) rastreando fugas con expresiones regulares y guardándolas de forma privada en el reporte `2_security_secrets_report.txt`.
+*   **Análisis de Rendimiento y Buenas Prácticas en Jetpack Compose:** Verificamos el uso adecuado de `remember`/`rememberSaveable` con `mutableStateOf`, el correcto indexado por `key` en LazyLayouts y la no realización de I/O directo dentro del cuerpo de un Composable (reporte `6_compose_performance_report.txt`).
+*   **Detección Avanzada de Fugas de Memoria (Leaks) y Hilos (Threads):** Evitamos fugas de memoria por almacenamiento de Context en singletons o companion objects, bloqueos del hilo principal (`Thread.sleep`), y omisión de remoción de listeners (reporte `5_memory_leaks_threads_report.txt`).
+*   **Emisión Modular y Reporte Privado:** Toda la auditoría se divide en **8 reportes planos independientes (.txt)**, cargados como artefactos de GitHub con retención de 14 días y transmitidos simultáneamente de forma segura a Discord para una lectura rápida y enfocada.
 

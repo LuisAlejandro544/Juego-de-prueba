@@ -18,131 +18,181 @@ jobs:
 
       - name: Run Quality, Bug & Safety Scan
         run: |
-          REPORT_FILE="code-analysis-report.txt"
+          REPORT_1="1_line_limits_report.txt"
+          REPORT_2="2_security_secrets_report.txt"
+          REPORT_3="3_insecure_storage_report.txt"
+          REPORT_4="4_cryptography_report.txt"
+          REPORT_5="5_memory_leaks_threads_report.txt"
+          REPORT_6="6_compose_performance_report.txt"
+          REPORT_7="7_todos_fixmes_report.txt"
+          REPORT_8="8_debugging_practices_report.txt"
           
-          echo "======================================================================" > "$REPORT_FILE"
-          echo "     REPORTE AUTOMATIZADO DE CALIDAD DE CÓDIGO Y SEGURIDAD (CI/CD)     " >> "$REPORT_FILE"
-          echo "======================================================================" >> "$REPORT_FILE"
-          echo "Fecha de Análisis (UTC): $(date -u)" >> "$REPORT_FILE"
-          echo "Repositorio: ${{ github.repository }}" >> "$REPORT_FILE"
-          echo "Rama / Commit: ${{ github.ref }} / ${{ github.sha }}" >> "$REPORT_FILE"
-          echo "" >> "$REPORT_FILE"
+          # 1. ARCHIVOS QUE SUPERAN EL LÍMITE DE LÍNEAS DE CÓDIGO (Límite: 300)
+          echo "======================================================================" > "$REPORT_1"
+          echo "    REPORTE 1: ARCHIVOS QUE SUPERAN EL LÍMITE DE LÍNEAS DE CÓDIGO     " >> "$REPORT_1"
+          echo "======================================================================" >> "$REPORT_1"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_1"
+          echo "Repositorio: ${{ github.repository }} | Rama: ${{ github.ref }}" >> "$REPORT_1"
+          echo "Límite configurado: 300 líneas de código" >> "$REPORT_1"
+          echo "" >> "$REPORT_1"
           
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "1. ARCHIVOS QUE SUPERAN EL LÍMITE DE LÍNEAS DE CÓDIGO (Límite: 300)" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          
-          # Find all code files excluding build and gradle directories
           find . -type f \( -name "*.kt" -o -name "*.java" -o -name "*.kts" -o -name "*.gradle" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
             lines=$(wc -l < "$file")
             if [ "$lines" -gt 300 ]; then
-              echo "  ⚠️  $file ($lines líneas) - ¡Supera el límite de 300 líneas!" >> "$REPORT_FILE"
+              echo "  ⚠️  $file ($lines líneas) - ¡Supera el límite de 300 líneas!" >> "$REPORT_1"
             fi
           done
           
-          # Check if any oversized files were found
-          if ! grep -q "⚠️" "$REPORT_FILE"; then
-            echo "  ✅ ¡Excelente! Ningún archivo de código supera el límite de 300 líneas." >> "$REPORT_FILE"
+          if ! grep -q "⚠️" "$REPORT_1"; then
+            echo "  ✅ ¡Excelente! Ningún archivo de código supera el límite de 300 líneas." >> "$REPORT_1"
           fi
-          echo "" >> "$REPORT_FILE"
-
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "2. SEGURIDAD: SECRETOS, LLAVES Y CREDENCIALES COMPROMETIDAS" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
+          
+          # 2. SEGURIDAD: SECRETOS, LLAVES Y CREDENCIALES COMPROMETIDAS
+          echo "======================================================================" > "$REPORT_2"
+          echo "         REPORTE 2: SEGURIDAD Y PREVENCIÓN DE FILTRADO DE SECRETOS    " >> "$REPORT_2"
+          echo "======================================================================" >> "$REPORT_2"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_2"
+          echo "" >> "$REPORT_2"
           
           TEMP_SEC="security_matches.tmp"
-          # Scan for high-entropy structures, AWS keys, JWTs, private keys, Firebase, or general key assignments
           find . -type f \( -name "*.kt" -o -name "*.java" -o -name "*.kts" -o -name "*.gradle" -o -name "*.xml" -o -name "*.json" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
-            # 1. AWS Keys
             grep -Hn -E "AKIA[0-9A-Z]{16}" "$file" >> "$TEMP_SEC" || true
-            # 2. JWT Tokens
             grep -Hn -E "eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*" "$file" >> "$TEMP_SEC" || true
-            # 3. Google Services or Firebase Keys (e.g., AIzaSy...)
             grep -Hn -E "AIzaSy[A-Za-z0-9-_]{35}" "$file" >> "$TEMP_SEC" || true
-            # 4. Standard hardcoded assignments to variables like key, secret, password, token
             grep -Hn -E "(api_?key|token|password|secret|private_?key|client_?secret)\s*=\s*\"[A-Za-z0-9+/]{10,}\"" "$file" | grep -v -E "(BuildConfig|System\.getenv|getenv)" >> "$TEMP_SEC" || true
           done
           
           if [ -s "$TEMP_SEC" ]; then
-            cat "$TEMP_SEC" >> "$REPORT_FILE"
+            cat "$TEMP_SEC" >> "$REPORT_2"
           else
-            echo "  ✅ No se encontraron firmas de credenciales, llaves API de Google/AWS o secretos comprometidos." >> "$REPORT_FILE"
+            echo "  ✅ No se encontraron firmas de credenciales, llaves API de Google/AWS o secretos comprometidos." >> "$REPORT_2"
           fi
           rm -f "$TEMP_SEC"
-          echo "" >> "$REPORT_FILE"
-
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "3. VULNERABILIDADES DE INFORMACIÓN Y ALMACENAMIENTO INSEGURO" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
+          
+          # 3. VULNERABILIDADES DE INFORMACIÓN Y ALMACENAMIENTO INSEGURO
+          echo "======================================================================" > "$REPORT_3"
+          echo "      REPORTE 3: VULNERABILIDADES DE ALMACENAMIENTO Y TRANSMISIÓN      " >> "$REPORT_3"
+          echo "======================================================================" >> "$REPORT_3"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_3"
+          echo "" >> "$REPORT_3"
           
           TEMP_STORAGE="storage_matches.tmp"
-          # Scan for cleartext traffic (http:// instead of https://), insecure shared preferences, or backup configs
           find . -type f \( -name "*.kt" -o -name "*.java" -o -name "*.xml" -o -name "*.kts" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
-            # 1. HTTP Insecure URLs
             grep -Hn -E "http://[A-Za-z0-9\.\-_]+" "$file" | grep -v -E "(w3\.org|schemas\.android|localhost|127\.0\.0\.1)" >> "$TEMP_STORAGE" || true
-            # 2. Insecure SharedPreferences World modes
             grep -Hn -E "(MODE_WORLD_READABLE|MODE_WORLD_WRITEABLE)" "$file" >> "$TEMP_STORAGE" || true
-            # 3. Backup permitted (vulnerable to adb backup extraction)
             grep -Hn "android:allowBackup=\"true\"" "$file" >> "$TEMP_STORAGE" || true
           done
           
           if [ -s "$TEMP_STORAGE" ]; then
-            cat "$TEMP_STORAGE" >> "$REPORT_FILE"
+            cat "$TEMP_STORAGE" >> "$REPORT_3"
           else
-            echo "  ✅ Sin problemas detectados de almacenamiento inseguro o transmisiones en texto plano (HTTP)." >> "$REPORT_FILE"
+            echo "  ✅ Sin problemas detectados de almacenamiento inseguro o transmisiones en texto plano (HTTP)." >> "$REPORT_3"
           fi
           rm -f "$TEMP_STORAGE"
-          echo "" >> "$REPORT_FILE"
-
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "4. CRIPTOGRAFÍA INSEGURA Y DEBILIDADES DE ALGORITMO" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
+          
+          # 4. CRIPTOGRAFÍA INSEGURA Y DEBILIDADES DE ALGORITMO
+          echo "======================================================================" > "$REPORT_4"
+          echo "          REPORTE 4: CRIPTOGRAFÍA INSEGURA Y ALGORITMOS DÉBILES        " >> "$REPORT_4"
+          echo "======================================================================" >> "$REPORT_4"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_4"
+          echo "" >> "$REPORT_4"
           
           TEMP_CRYPTO="crypto_matches.tmp"
-          # Scan for outdated hash algorithms (MD5, SHA-1), static IVs, or Cipher ECB mode
           find . -type f \( -name "*.kt" -o -name "*.java" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
-            # 1. Insecure Cryptographic hashes
             grep -Hn -i -E "(\"MD5\"|\"SHA-1\")" "$file" >> "$TEMP_CRYPTO" || true
-            # 2. Insecure AES ECB block cipher mode
             grep -Hn -E "Cipher\.getInstance\(\"[AES|DES|RSA]+/[ECB|None]+" "$file" >> "$TEMP_CRYPTO" || true
-            # 3. Hardcoded AES keys or IV vectors
             grep -Hn -i -E "(IvParameterSpec\(\s*\"|SecretKeySpec\(\s*\"|hardcoded.*salt)" "$file" >> "$TEMP_CRYPTO" || true
           done
           
           if [ -s "$TEMP_CRYPTO" ]; then
-            cat "$TEMP_CRYPTO" >> "$REPORT_FILE"
+            cat "$TEMP_CRYPTO" >> "$REPORT_4"
           else
-            echo "  ✅ No se encontraron algoritmos criptográficos débiles o configuraciones simétricas inseguras." >> "$REPORT_FILE"
+            echo "  ✅ No se encontraron algoritmos criptográficos débiles o configuraciones simétricas inseguras." >> "$REPORT_4"
           fi
           rm -f "$TEMP_CRYPTO"
-          echo "" >> "$REPORT_FILE"
-
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "5. BUGS DE MEMORIA, FUGAS (LEAKS) Y RIESGOS DE RENDIMIENTO" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
+          
+          # 5. DETECCIÓN AVANZADA DE FUGAS DE MEMORIA (LEAKS) Y HILOS (THREADS)
+          echo "======================================================================" > "$REPORT_5"
+          echo "     REPORTE 5: DETECCIÓN AVANZADA DE FUGAS DE MEMORIA Y HILOS        " >> "$REPORT_5"
+          echo "======================================================================" >> "$REPORT_5"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_5"
+          echo "" >> "$REPORT_5"
           
           TEMP_BUGS="bugs_matches.tmp"
-          # Scan for static references to Context, Activity, or Views that cause leak, or raw Thread.sleep blocking UI
           find . -type f \( -name "*.kt" -o -name "*.java" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
             # 1. Memory Leak Hazards (Static context/activity/views)
             grep -Hn -E "(static\s+Context\s+|static\s+Activity\s+|static\s+View\s+|companion\s+object.*var\s+context\s*:|companion\s+object.*var\s+activity\s*:)" "$file" >> "$TEMP_BUGS" || true
-            # 2. Blocking thread delays on Main Threads
+            # 2. Raw Context stored in Kotlin 'object' declarations (singletons)
+            grep -Hn -E "(object\s+[A-Za-z0-9_]+\s*\{.*var\s+context\s*:|class\s+[A-Za-z0-9_]+\s*private\s+constructor\s*\(.*context\s*:)" "$file" >> "$TEMP_BUGS" || true
+            # 3. Blocking thread delays on Main Threads
             grep -Hn -E "Thread\.sleep\(" "$file" | grep -v -E "(Test|test)" >> "$TEMP_BUGS" || true
-            # 3. Unclosed system resources (raw InputStream/OutputStream or Cursor without close)
+            # 4. Unclosed system resources (raw InputStream/OutputStream or Cursor without close)
             grep -Hn -E "(\.open\([^)]*\)|\.query\([^)]*\))" "$file" | grep -v -E "(\.use\s*\{|\.close\(\))" >> "$TEMP_BUGS" || true
+            # 5. Broadcast receivers registered without unregister in same file
+            if grep -q "registerReceiver(" "$file"; then
+              if ! grep -q "unregisterReceiver(" "$file"; then
+                echo "  ⚠️ $file: registerReceiver() utilizado sin detectar unregisterReceiver() en el mismo archivo." >> "$TEMP_BUGS"
+              fi
+            fi
+            # 6. Sensor listeners registered without unregister in same file
+            if grep -q "registerListener(" "$file"; then
+              if ! grep -q "unregisterListener(" "$file"; then
+                echo "  ⚠️ $file: registerListener() utilizado sin detectar unregisterListener() en el mismo archivo." >> "$TEMP_BUGS"
+              fi
+            fi
+            # 7. Companion object CoroutineScope definition
+            grep -Hn -E "(companion\s+object.*val\s+[A-Za-z_0-9]*scope\s*=\s*CoroutineScope)" "$file" >> "$TEMP_BUGS" || true
           done
           
           if [ -s "$TEMP_BUGS" ]; then
-            cat "$TEMP_BUGS" >> "$REPORT_FILE"
+            cat "$TEMP_BUGS" >> "$REPORT_5"
           else
-            echo "  ✅ Sin riesgos evidentes detectados de fugas de memoria (Context) o bloqueos del hilo principal." >> "$REPORT_FILE"
+            echo "  ✅ Sin riesgos evidentes detectados de fugas de memoria (Context) o bloqueos del hilo principal." >> "$REPORT_5"
           fi
           rm -f "$TEMP_BUGS"
-          echo "" >> "$REPORT_FILE"
-
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "6. COMENTARIOS PENDIENTES Y REFACTORIZACIONES (TODO / FIXME)" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
+          
+          # 6. ANÁLISIS DE RENDIMIENTO Y BUENAS PRÁCTICAS EN JETPACK COMPOSE
+          echo "======================================================================" > "$REPORT_6"
+          echo "     REPORTE 6: RENDIMIENTO Y BUENAS PRÁCTICAS EN JETPACK COMPOSE     " >> "$REPORT_6"
+          echo "======================================================================" >> "$REPORT_6"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_6"
+          echo "" >> "$REPORT_6"
+          
+          TEMP_COMPOSE="compose_matches.tmp"
+          find . -type f -name "*.kt" -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
+            if grep -q "import androidx.compose\." "$file"; then
+              # 1. mutableStateOf without remember
+              grep -Hn -E "mutableStateOf\(" "$file" | grep -v -E "(remember\s*\{|rememberSaveable\s*\{|remember\s*\(\s*Key|by\s+remember)" >> "$TEMP_COMPOSE" || true
+              # 2. Hardcoded Color hexes in Composables
+              grep -Hn "Color(0xFF" "$file" >> "$TEMP_COMPOSE" || true
+              # 3. Reading files or shared preferences directly inside Composable body
+              grep -Hn -E "(readText\(|writeText\(|\.getString\(|\.getSharedPreferences\(|\.edit\(\))" "$file" | grep -v -E "(LaunchedEffect|rememberCoroutineScope|ViewModel|test)" >> "$TEMP_COMPOSE" || true
+              # 4. LazyColumn / LazyRow items without key
+              if grep -q -E "(LazyColumn|LazyRow)" "$file"; then
+                grep -Hn "items(" "$file" | while read -r line_info; do
+                  line_num=$(echo "$line_info" | cut -d: -f2)
+                  next_lines=$(tail -n +"$line_num" "$file" | head -n 4)
+                  if ! echo "$next_lines" | grep -q -E "(key\s*=|\{\s*key\s*|\{\s*[A-Za-z0-9_]+\s*->\s*key\s*|\bkey\b)"; then
+                    echo "  ⚠️  $file:$line_num: Se detectó items() en LazyLayout que podría carecer de parámetro 'key' explícito (recomendado para rendimiento en recomposiciones)." >> "$TEMP_COMPOSE"
+                  fi
+                done
+              fi
+            fi
+          done
+          
+          if [ -s "$TEMP_COMPOSE" ]; then
+            cat "$TEMP_COMPOSE" >> "$REPORT_6"
+          else
+            echo "  ✅ No se encontraron violaciones evidentes de rendimiento o malas prácticas en Jetpack Compose." >> "$REPORT_6"
+          fi
+          rm -f "$TEMP_COMPOSE"
+          
+          # 7. COMENTARIOS PENDIENTES Y REFACTORIZACIONES (TODO / FIXME)
+          echo "======================================================================" > "$REPORT_7"
+          echo "      REPORTE 7: TAREAS PENDIENTES Y REFACTORIZACIONES (TODO / FIXME)  " >> "$REPORT_7"
+          echo "======================================================================" >> "$REPORT_7"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_7"
+          echo "" >> "$REPORT_7"
           
           TEMP_TODO="todo_matches.tmp"
           find . -type f \( -name "*.kt" -o -name "*.java" -o -name "*.kts" -o -name "*.gradle" -o -name "*.md" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
@@ -153,22 +203,22 @@ jobs:
           done
           
           if [ -s "$TEMP_TODO" ]; then
-            cat "$TEMP_TODO" >> "$REPORT_FILE"
+            cat "$TEMP_TODO" >> "$REPORT_7"
           else
-            echo "  ✅ No se encontraron tareas TODO o FIXME pendientes en el código analizado." >> "$REPORT_FILE"
+            echo "  ✅ No se encontraron tareas TODO o FIXME pendientes en el código analizado." >> "$REPORT_7"
           fi
           rm -f "$TEMP_TODO"
-          echo "" >> "$REPORT_FILE"
-
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
-          echo "7. MALAS PRÁCTICAS SINTÁCTICAS O DE DEPURACIÓN" >> "$REPORT_FILE"
-          echo "----------------------------------------------------------------------" >> "$REPORT_FILE"
+          
+          # 8. MALAS PRÁCTICAS SINTÁCTICAS O DE DEPURACIÓN
+          echo "======================================================================" > "$REPORT_8"
+          echo "      REPORTE 8: MALAS PRÁCTICAS SINTÁCTICAS O DE DEPURACIÓN EN PROD   " >> "$REPORT_8"
+          echo "======================================================================" >> "$REPORT_8"
+          echo "Fecha de Análisis: $(date -u)" >> "$REPORT_8"
+          echo "" >> "$REPORT_8"
           
           TEMP_PRACTICE="practice_matches.tmp"
           find . -type f \( -name "*.kt" -o -name "*.java" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
-            # Check for printStackTrace() or System.out.print() or println() in Kotlin/Java files
             if grep -q -E "(printStackTrace\(\)|System\.out\.print|println\()" "$file"; then
-              # Avoid matching standard tests or gradle build configurations
               if [[ "$file" != *"Test"* && "$file" != *".kts"* ]]; then
                 echo "  ⚠️  Depuración cruda en $file (se sugiere usar clases Log o Timber):" >> "$TEMP_PRACTICE"
                 grep -Hn -E "(printStackTrace\(\)|System\.out\.print|println\()" "$file" | sed 's/^/    - /' >> "$TEMP_PRACTICE" || true
@@ -177,22 +227,28 @@ jobs:
           done
           
           if [ -s "$TEMP_PRACTICE" ]; then
-            cat "$TEMP_PRACTICE" >> "$REPORT_FILE"
+            cat "$TEMP_PRACTICE" >> "$REPORT_8"
           else
-            echo "  ✅ No se detectaron malas prácticas obvias de depuración en los archivos principales." >> "$REPORT_FILE"
+            echo "  ✅ No se detectaron malas prácticas obvias de depuración en los archivos principales." >> "$REPORT_8"
           fi
           rm -f "$TEMP_PRACTICE"
-          echo "" >> "$REPORT_FILE"
-
-          echo "======================================================================" >> "$REPORT_FILE"
-          echo "                     FIN DEL REPORTE AUTOMÁTICO                       " >> "$REPORT_FILE"
-          echo "======================================================================" >> "$REPORT_FILE"
           
-          echo "✅ Escaneo completado con éxito de manera interna y segura."
-          echo "El reporte detallado ha sido estructurado en un archivo efímero."
-          echo "Para garantizar máxima seguridad y privacidad (especialmente en repositorios públicos),"
-          echo "el contenido técnico del análisis NO se imprime en esta consola pública de GitHub Actions."
-          echo "Se enviará de forma 100% cifrada y privada directamente a tu webhook de Discord adjunto."
+          echo "✅ Escaneo modularizado completado con éxito."
+
+      - name: Upload Analysis Reports as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: modular-code-analysis-reports
+          path: |
+            1_line_limits_report.txt
+            2_security_secrets_report.txt
+            3_insecure_storage_report.txt
+            4_cryptography_report.txt
+            5_memory_leaks_threads_report.txt
+            6_compose_performance_report.txt
+            7_todos_fixmes_report.txt
+            8_debugging_practices_report.txt
+          retention-days: 14
 
       - name: Send Report to Discord
         env:
@@ -207,10 +263,17 @@ jobs:
             echo "3. Pega la URL del Webhook de tu canal de Discord."
             echo "=============================================================================================="
           else
-            echo "Enviando reporte detallado de calidad y seguridad a Discord de forma segura..."
+            echo "Enviando reportes detallados en módulos de calidad y seguridad a Discord..."
             curl -H "Content-Type: multipart/form-data" \
-              -F "file=@code-analysis-report.txt" \
-              -F "payload_json={\"content\": \"🚨 **¡Análisis de Calidad y Seguridad Finalizado!**\n\nSe ha completado el escaneo estático automatizado para la rama \`${{ github.ref_name }}\`.\n\n* **Commit:** \`${{ github.sha }}\`\n* **Autor:** ${{ github.actor }}\n\nAdjuntamos el reporte técnico generado para que puedas revisar posibles vulnerabilidades, fugas de secretos y límites de líneas de código de manera 100% privada sin exponerlo en los artefactos públicos de GitHub si tu repo es abierto. 🔒\"}" \
+              -F "file1=@1_line_limits_report.txt" \
+              -F "file2=@2_security_secrets_report.txt" \
+              -F "file3=@3_insecure_storage_report.txt" \
+              -F "file4=@4_cryptography_report.txt" \
+              -F "file5=@5_memory_leaks_threads_report.txt" \
+              -F "file6=@6_compose_performance_report.txt" \
+              -F "file7=@7_todos_fixmes_report.txt" \
+              -F "file8=@8_debugging_practices_report.txt" \
+              -F "payload_json={\"content\": \"🚨 **¡Análisis de Calidad y Seguridad Finalizado!**\n\nSe ha completado el escaneo estático automatizado para la rama \`${{ github.ref_name }}\`.\n\n* **Commit:** \`${{ github.sha }}\`\n* **Autor:** ${{ github.actor }}\n\nHemos dividido el análisis en **8 reportes modulares independientes (.txt)** para evitar el agobio de un solo log masivo y facilitar tu lectura de manera 100% privada directamente desde Discord. 🔒\"}" \
               "$DISCORD_WEBHOOK"
           fi
 

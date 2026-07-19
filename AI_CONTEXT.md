@@ -85,14 +85,24 @@ El `GameEngine` actúa como la única fuente de verdad (*Single Source of Truth*
 
 ## 🤖 6. CUMPLIMIENTO DE PIPELINES DE AUTOMATIZACIÓN (CI/CD)
 
-Todo agente de IA o desarrollador que colabore en este repositorio debe respetar las reglas validadas por nuestros workflows automáticos de GitHub Actions:
+Todo agente de IA o desarrollador que colabore en este repositorio debe respetar las reglas validadas por nuestros workflows automáticos de GitHub Actions. El pipeline genera **8 reportes planos independientes (.txt)** para un escaneo enfocado:
 
 1.  **Mantener la modularidad de archivos:**
-    *   Cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** será reportado por el workflow de análisis de calidad `code-analysis.yml`. Mantén los composables limpios y desacoplados.
+    *   Cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** será reportado por `code-analysis.yml` en `1_line_limits_report.txt`. Mantén los composables limpios y desacoplados.
 2.  **Prevención de filtrado de secretos:**
-    *   No hardcodear claves bajo ninguna circunstancia. El pipeline de seguridad audita asignaciones explícitas de tokens y contraseñas. Usa `BuildConfig` para cargar variables inyectadas del entorno. Los reportes de calidad y seguridad pueden enviarse de forma segura y privada a tu canal de Discord configurando `DISCORD_WEBHOOK_URL` en los secretos de GitHub.
-3.  **Compilaciones eficientes:**
+    *   No hardcodear claves bajo ninguna circunstancia. El pipeline audita tokens y contraseñas (`2_security_secrets_report.txt`). Usa `BuildConfig` para cargar variables del entorno.
+3.  **Rendimiento y Buenas Prácticas en Jetpack Compose:**
+    *   **❌ NO** inicialices `mutableStateOf()` sin un bloque `remember` o `rememberSaveable` dentro de un Composable (reporte `6_compose_performance_report.txt`).
+    *   **✅ SÍ** provee un parámetro `key` explícito al utilizar `items()` en `LazyColumn`/`LazyRow` para optimizar las recomposiciones.
+    *   **❌ NO** realices llamadas directas de lectura/escritura de archivos o de persistencia (I/O bloqueante) dentro del cuerpo directo de un Composable; delega en ViewModels o bloques de efectos controlados como `LaunchedEffect`.
+    *   **❌ NO** uses colores hexadecimales hardcodeados (como `Color(0xFF...)`) en composables; utiliza los esquemas dinámicos del `MaterialTheme.colorScheme`.
+4.  **Detección de Fugas de Memoria y Bloqueo de Hilos:**
+    *   **❌ NO** declares variables de tipo `Context`, `Activity` o `View` estáticas o dentro de companion objects de Kotlin (reporte `5_memory_leaks_threads_report.txt`).
+    *   **❌ NO** inyectes ni retengas instancias de `Context` de forma directa en singletons (`object`); usa siempre `context.applicationContext`.
+    *   **❌ NO** utilices `Thread.sleep()` en hilos de producción para no bloquear el hilo de interfaz de usuario. Usa Coroutines y su función suspendible `delay()`.
+    *   **✅ SÍ** remueve o desregistra siempre listeners, receptores de broadcast (`registerReceiver` / `unregisterReceiver`) o sensores en los ciclos de vida correctos.
+5.  **Compilaciones eficientes:**
     *   El empaquetado del APK de depuración se activa de manera selectiva. Los cambios menores exclusivos en archivos markdown de documentación (`.md`) o configuraciones externas no disparan la compilación asíncrona, pero los cambios en `/app` sí lo harán.
-4.  **Uso de Logs seguros:**
-    *   Evita el uso de `printStackTrace()` y `System.out.println()` en el código de producción de la aplicación principal para no generar alertas en el reporte automatizado de malas prácticas. Utiliza los canales de log de Android estándar (`android.util.Log`).
+6.  **Uso de Logs seguros:**
+    *   Evita el uso de `printStackTrace()` y `System.out.println()` en el código de producción de la aplicación principal para no generar alertas en el reporte `8_debugging_practices_report.txt`. Utiliza los canales de log de Android estándar (`android.util.Log`).
 

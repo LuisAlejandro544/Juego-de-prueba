@@ -128,13 +128,17 @@ El proyecto cuenta con pipelines de integración continua (CI) configurados medi
    - Genera y emite un artefacto descargable con el archivo APK depurado (`app-debug.apk`) con retención de 7 días.
 
 2. **Code Quality & Security Scan (`code-analysis.yml`):**
-   - Ejecuta un análisis estático profundo del repositorio en busca de malas prácticas y vulnerabilidades.
-   - **Análisis de Tamaño de Archivo:** Alerta y reporta sobre cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** para garantizar modularidad y limpieza arquitectónica.
-   - **Escaneo de Seguridad:** Rastrea asignaciones de llaves API, secretos y tokens hardcodeados en el código.
-   - **Tareas Pendientes (TODO/FIXME):** Centraliza todos los recordatorios técnicos de refactorización pendientes.
-   - **Malas Prácticas:** Detecta la depuración cruda en archivos principales (como `System.out.println` o `printStackTrace()`) promoviendo el estándar de logs en Android.
-   - **Notificaciones Seguras y Privadas a Discord:** Permite enviar el reporte automáticamente y de manera 100% privada a tu canal de Discord en lugar de depender de artefactos públicos. Para activarlo, añade la URL de tu webhook de Discord en los secretos de tu repositorio de GitHub como `DISCORD_WEBHOOK_URL`.
-   - Genera un archivo descargable de reporte independiente en formato plano (`code-analysis-report.txt`) con retención de 14 días.
+   - Ejecuta un análisis estático profundo del repositorio estructurado de manera modular en **8 reportes planos independientes (.txt)** para evitar la sobrecarga de un solo archivo masivo y facilitar el análisis enfocado:
+     1. **`1_line_limits_report.txt`:** Control de modularidad y alerta de archivos de código que superan las **300 líneas**.
+     2. **`2_security_secrets_report.txt`:** Escaneo de llaves API, secretos y tokens hardcodeados en el código.
+     3. **`3_insecure_storage_report.txt`:** Detección de transmisiones en texto plano (HTTP) y configuraciones de respaldo vulnerables.
+     4. **`4_cryptography_report.txt`:** Alertas sobre uso de algoritmos criptográficos débiles o inseguros (MD5, SHA-1, ECB).
+     5. **`5_memory_leaks_threads_report.txt`:** **Detección Avanzada de Fugas de Memoria (Leaks) y Hilos (Threads)**. Analiza referencias estáticas peligrosas a Context/Activity, singletons con retención de Context, Coroutines companion scopes sin liberar, bloqueo del hilo principal con Thread.sleep, y registros de listeners (Broadcast/Sensor) sin cierre.
+     6. **`6_compose_performance_report.txt`:** **Análisis de Rendimiento y Buenas Prácticas en Jetpack Compose**. Escanea inicializaciones de mutableStateOf sin remember, colores hexadecimales hardcodeados en composables, lecturas bloqueantes de archivos o SharedPreferences en el cuerpo del Composable, y uso de items() en LazyLayouts sin parámetros 'key' explícitos.
+     7. **`7_todos_fixmes_report.txt`:** Centraliza todos los comentarios TODO y FIXME pendientes del proyecto.
+     8. **`8_debugging_practices_report.txt`:** Identifica depuraciones crudas (System.out.println, printStackTrace) promoviendo el estándar de logs en Android.
+   - **Notificaciones Seguras y Privadas a Discord:** Envía los 8 reportes de forma simultánea y 100% privada directamente a tu canal de Discord configurando `DISCORD_WEBHOOK_URL` en los secretos de GitHub, garantizando máxima seguridad en repositorios abiertos.
+   - Genera un archivo comprimido descargable con los 8 reportes modulares (`modular-code-analysis-reports`) con retención de 14 días.
 
 ---
 
