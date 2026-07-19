@@ -61,10 +61,10 @@ fun FafiFederationScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text("Rasgo Político: ", color = TextSecondary, fontSize = 11.sp)
                             val badgeCol = when (fafi.president.trait) {
-                                Fafitrait.CORRUPTO -> Color(0xFFDC2626)
-                                Fafitrait.AMBICIOSO -> Color(0xFFD97706)
-                                Fafitrait.EXPANSIVO -> Color(0xFF2563EB)
-                                Fafitrait.TRADICIONALISTA -> Color(0xFF0D9488)
+                                Fafitrait.CORRUPTO -> StatusRed
+                                Fafitrait.AMBICIOSO -> StatusAmber
+                                Fafitrait.EXPANSIVO -> StatusBlue
+                                Fafitrait.TRADICIONALISTA -> StatusTeal
                             }
                             Text(
                                 text = fafi.president.trait.name,
@@ -123,7 +123,7 @@ fun FafiFederationScreen(
                 if (manager.isSummoned) {
                     // Summoned state
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0F291F)),
+                        colors = CardDefaults.cardColors(containerColor = DarkEmeraldBg),
                         border = BorderStroke(1.dp, GrassEmerald),
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -145,7 +145,7 @@ fun FafiFederationScreen(
                             
                             Button(
                                 onClick = onResignSummonClick,
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626)),
+                                colors = ButtonDefaults.buttonColors(containerColor = StatusRed),
                                 shape = RoundedCornerShape(8.dp),
                                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp).testTag("resign_summon_button")
                             ) {

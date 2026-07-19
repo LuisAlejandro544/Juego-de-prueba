@@ -71,12 +71,15 @@ Este documento detalla la planificación estratégica, el estado actual de desar
 *   **Optimización del Pipeline de Construcción (COMPLETADO ✅):**
     *   Disparador del empaquetado APK configurado con filtros de ruta (`paths`) en GitHub Actions para compilar únicamente si se altera la carpeta `/app`.
 *   **Pipeline de Calidad, Rendimiento y Seguridad (COMPLETADO ✅):**
-    *   **Análisis Modular (8 Reportes .txt):** Dividido en reportes planos independientes de límites de líneas (300 líneas), seguridad de credenciales, almacenamiento inseguro, criptografía débil, TODOs, malas prácticas, rendimiento en Jetpack Compose y detección avanzada de fugas de memoria/hilos.
+    *   **Análisis Modular (8 Reportes .txt):** Dividido en reportes planos independientes de límites de líneas (300 líneas), seguridad de credenciales, almacenamiento y transmisión insegura (HTTP en strings de código con exclusión inteligente de comentarios de docs y carpetas de prueba, vulnerabilidades locales y prevención real de inyección SQL), criptografía débil, TODOs, malas prácticas, rendimiento en Jetpack Compose y detección avanzada de fugas de memoria/hilos.
     *   **Detección Avanzada de Fugas (Leaks) e Hilos:** Análisis automatizado de Context o Activity almacenados estáticamente, bloqueos de hilos principales por `Thread.sleep`, hilos persistentes o scopes de companion objects, y liberación de listeners.
     *   **Rendimiento en Jetpack Compose:** Escaneo preventivo de estados no recordados (`mutableStateOf`), LazyLayouts sin `key`, I/O bloqueante directo en el cuerpo del Composable, y colores hexadecimales hardcodeados.
-    *   **Integración Multimedia con Discord:** Emisión de los 8 reportes simultáneos de forma segura y privada a Discord.
+    *   **Integración de Reportes con Discord:** Emisión automática y confidencial de los 8 reportes a través del bot **`Fafi Security Guard`** utilizando el secreto `DISCORD_WEBHOOK_URL`.
+*   **Pruebas Unitarias Automatizadas (COMPLETADO ✅):**
+    *   Integración del comando `gradle :app:testDebugUnitTest` mediante `unit-tests.yml` para validar la lógica del motor procedural y prevenir regresiones antes de fusionar código a la rama principal. Envía alertas de éxito y fallo al bot dedicado **`Fafi Unit Tests Guard`** usando el secreto `DISCORD_UNIT_TESTS_WEBHOOK_URL`.
+*   **Pruebas Visuales y Capturas de Tienda (COMPLETADO ✅):**
+    *   Ejecución en la nube mediante `screenshot-tests.yml` de renderizados gráficos en alta resolución utilizando **Roborazzi y Robolectric**. Genera de forma automatizada las capturas optimizadas para las tiendas de aplicaciones (App Stores) y las inyecta directamente como multimedia adjunto a Discord a través del bot **`Fafi Visual Inspector`** usando el secreto `DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL`.
 *   **Futuras Automatizaciones de GitHub Actions (PLANIFICADO):**
     *   *Linter Integrado:* Ejecución automática de Kotlin Linter/Formatter (como Spotless o ktlint) en cada Pull Request para forzar el estilo de código.
-    *   *Ejecución de Pruebas Unitarias:* Integrar el comando `gradle :app:testDebugUnitTest` para validar la lógica del motor procedural y prevenir regresiones antes de fusionar código a la rama principal.
-    *   *Pruebas Visuales Automatizadas (Roborazzi):* Ejecución en la nube de comparativas de capturas de pantalla para validar que las pantallas de juego de Material Design 3 se rendericen exactamente como se planificó.
+
 

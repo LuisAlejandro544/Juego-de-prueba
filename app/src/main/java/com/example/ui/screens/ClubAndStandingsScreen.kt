@@ -160,7 +160,7 @@ fun ClubAndStandingsScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(newsLog) { news ->
+                        items(newsLog, key = { it.hashCode() }) { news ->
                             Text(
                                 text = "• $news",
                                 color = TextPrimary,

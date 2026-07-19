@@ -16,3 +16,22 @@ val TextPrimary = Color(0xFFF8FAFC)      // Soft Off-White (Tailwind Slate 50)
 val TextSecondary = Color(0xFF94A3B8)    // Soothing Slate Blue-Grey for descriptions (Tailwind Slate 400)
 val CardGold = Color(0xFFF59E0B)         // Pure Athletic Amber Gold
 
+// Semantic status, trait, and UI elements color tokens (replacing inline hardcoded hexes)
+val StatusRed = Color(0xFFDC2626)          // Alert / Attack Red
+val StatusAmber = Color(0xFFD97706)        // Warning / Ambition Amber
+val StatusBlue = Color(0xFF2563EB)         // Info / Expansive Blue
+val StatusTeal = Color(0xFF0D9488)         // Success / Traditionalist Teal
+val StatusGreen = Color(0xFF10B981)        // Win / General Emerald Green
+val StatusGray = Color(0xFF6B7280)         // Neutral Gray
+val StatusInsecureRed = Color(0xFFEF4444)  // Lost / Error Red
+
+val DarkEmeraldBg = Color(0xFF0F291F)      // Dark green forest background for active summons
+val DarkSteelCard = Color(0xFF131D31)      // Slate Card Background
+
+// Player Position Colors (reusable across squad, onboarding, etc.)
+val PositionGKColor = Color(0xFFFFD700)    // Goal Keeper Gold
+val PositionDEFColor = Color(0xFF3399FF)   // Defender Blue
+val PositionMIDColor = Color(0xFF00FF88)   // Midfielder Green
+val PositionATTColor = Color(0xFFFF4D4D)   // Attacker Red
+val PositionOrangeGK = Color(0xFFEA580C)   // Secondary GK Badge Orange
+

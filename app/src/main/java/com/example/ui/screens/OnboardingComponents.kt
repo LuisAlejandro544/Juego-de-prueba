@@ -240,7 +240,7 @@ fun UniverseSelectionBrowser(
                             verticalArrangement = Arrangement.spacedBy(6.dp),
                             modifier = Modifier.weight(1f)
                         ) {
-                            items(countries) { country ->
+                            items(countries, key = { it.name }) { country ->
                                 val isSelected = selectedCountry?.name == country.name
                                 Row(
                                     modifier = Modifier
@@ -297,7 +297,7 @@ fun UniverseSelectionBrowser(
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                items(countryClubs) { club ->
+                                items(countryClubs, key = { it.id }) { club ->
                                     val isSelected = selectedClub?.id == club.id
                                     val ratings = club.getTeamRatings()
                                     
@@ -340,9 +340,9 @@ fun UniverseSelectionBrowser(
                                             modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
-                                            Text("ATA: ${ratings.third}", color = Color(0xFFFF4D4D), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                            Text("MED: ${ratings.second}", color = Color(0xFF00FF88), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                            Text("DEF: ${ratings.first}", color = Color(0xFF3399FF), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                            Text("ATA: ${ratings.third}", color = PositionATTColor, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                            Text("MED: ${ratings.second}", color = PositionMIDColor, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                            Text("DEF: ${ratings.first}", color = PositionDEFColor, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                                             Spacer(modifier = Modifier.weight(1f))
                                             Text("🏟️ ${club.stadiumCapacity} cap", color = TextSecondary, fontSize = 10.sp)
                                         }
@@ -380,19 +380,19 @@ fun UniverseSelectionBrowser(
                                 verticalArrangement = Arrangement.spacedBy(6.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
-                                items(club.squad) { player ->
+                                items(club.squad, key = { it.fullName }) { player ->
                                     val posColor = when (player.position) {
-                                        Position.GK -> Color(0xFFFFD700)
-                                        Position.DEF -> Color(0xFF3399FF)
-                                        Position.MID -> Color(0xFF00FF88)
-                                        Position.ATT -> Color(0xFFFF4D4D)
+                                        Position.GK -> PositionGKColor
+                                        Position.DEF -> PositionDEFColor
+                                        Position.MID -> PositionMIDColor
+                                        Position.ATT -> PositionATTColor
                                     }
 
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clip(RoundedCornerShape(6.dp))
-                                            .background(Color(0xFF131D31))
+                                            .background(DarkSteelCard)
                                             .clickable { onSelectPlayerForDetail(player) }
                                             .padding(8.dp),
                                         verticalAlignment = Alignment.CenterVertically,

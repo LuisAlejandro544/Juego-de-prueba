@@ -123,7 +123,7 @@ fun LiveMatchTickerScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(userMatch.events) { event ->
+                        items(userMatch.events, key = { "${it.minute}_${it.type}_${it.description.hashCode()}" }) { event ->
                             val color = when (event.type) {
                                 "GOAL_HOME", "GOAL_AWAY" -> NeonAmber
                                 "SHUTOUT_HERO" -> GrassEmerald

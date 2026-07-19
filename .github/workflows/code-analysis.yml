@@ -77,16 +77,50 @@ jobs:
           echo "" >> "$REPORT_3"
           
           TEMP_STORAGE="storage_matches.tmp"
-          find . -type f \( -name "*.kt" -o -name "*.java" -o -name "*.xml" -o -name "*.kts" \) -not -path "*/build/*" -not -path "*/.gradle/*" | while read -r file; do
-            grep -Hn -E "http://[A-Za-z0-9\.\-_]+" "$file" | grep -v -E "(w3\.org|schemas\.android|localhost|127\.0\.0\.1)" >> "$TEMP_STORAGE" || true
+          # Filtrado Inteligente de Archivos de Prueba y Comentarios
+          # Excluimos directorios de tests para enfocarnos únicamente en el código productivo real
+          find . -type f \( -name "*.kt" -o -name "*.java" -o -name "*.xml" -o -name "*.kts" \) \
+            -not -path "*/build/*" \
+            -not -path "*/.gradle/*" \
+            -not -path "*/src/test/*" \
+            -not -path "*/src/androidTest/*" | while read -r file; do
+            
+            # --- 1. TRANSMISIÓN INSEGURA (REDES INSEGURAS REALES) ---
+            # Buscamos strings literales con "http://" en código, ignorando enlaces en comentarios
+            grep -Hn -E "\"[Hh][Tt][Tt][Pp]://" "$file" | \
+              grep -v -E "(w3\.org|schemas\.android|localhost|127\.0\.0\.1|d\.android\.com|developer\.android\.com|example\.com)" >> "$TEMP_STORAGE" || true
+            
+            # Permitir tráfico cleartext en Manifest o configuraciones de seguridad (Cleartext Permitted)
+            grep -Hn -E "(usesCleartextTraffic=\"true\"|cleartextTrafficPermitted=\"true\")" "$file" >> "$TEMP_STORAGE" || true
+            
+            # TrustManager inseguro o bypass de verificación SSL en producción
+            grep -Hn -E "(X509TrustManager|HostnameVerifier.*->\s*true|allowAllSSL|ALLOW_ALL_HOSTNAME_VERIFIER)" "$file" >> "$TEMP_STORAGE" || true
+
+            # --- 2. ALMACENAMIENTO INSEGURO Y SQL INJECTION ---
+            # Modos obsoletos e inseguros de SharedPreferences
             grep -Hn -E "(MODE_WORLD_READABLE|MODE_WORLD_WRITEABLE)" "$file" >> "$TEMP_STORAGE" || true
+            
+            # allowBackup activo sin restricciones de reglas (riesgo de extracción por ADB backup)
             grep -Hn "android:allowBackup=\"true\"" "$file" >> "$TEMP_STORAGE" || true
+            
+            # Almacenamiento externo no seguro (evitando Scoped Storage)
+            grep -Hn -E "(getExternalStorageDirectory|getExternalStoragePublicDirectory)" "$file" >> "$TEMP_STORAGE" || true
+            
+            # Consultas SQLite crudas concatenadas directamente (Riesgo de Inyección SQL)
+            grep -Hn -E "\.rawQuery\(\s*\"[^\"]*(\+\s*[a-zA-Z_0-9]+|\$[a-zA-Z_0-9]+)" "$file" >> "$TEMP_STORAGE" || true
+            grep -Hn -E "\.execSQL\(\s*\"[^\"]*(\+\s*[a-zA-Z_0-9]+|\$[a-zA-Z_0-9]+)" "$file" >> "$TEMP_STORAGE" || true
           done
           
+          # Filtrar cualquier línea que sea puramente comentarios de documentación antes de guardar
+          if [ -f "$TEMP_STORAGE" ]; then
+            grep -v -E "^\s*(\*|//|/\*|<!--)" "$TEMP_STORAGE" > "${TEMP_STORAGE}.filtered" || true
+            mv "${TEMP_STORAGE}.filtered" "$TEMP_STORAGE"
+          fi
+
           if [ -s "$TEMP_STORAGE" ]; then
             cat "$TEMP_STORAGE" >> "$REPORT_3"
           else
-            echo "  ✅ Sin problemas detectados de almacenamiento inseguro o transmisiones en texto plano (HTTP)." >> "$REPORT_3"
+            echo "  ✅ Sin problemas detectados de almacenamiento inseguro, transmisiones en texto plano (HTTP) o consultas SQL expuestas." >> "$REPORT_3"
           fi
           rm -f "$TEMP_STORAGE"
           

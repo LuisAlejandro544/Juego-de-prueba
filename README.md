@@ -131,7 +131,7 @@ El proyecto cuenta con pipelines de integración continua (CI) configurados medi
    - Ejecuta un análisis estático profundo del repositorio estructurado de manera modular en **8 reportes planos independientes (.txt)** para evitar la sobrecarga de un solo archivo masivo y facilitar el análisis enfocado:
      1. **`1_line_limits_report.txt`:** Control de modularidad y alerta de archivos de código que superan las **300 líneas**.
      2. **`2_security_secrets_report.txt`:** Escaneo de llaves API, secretos y tokens hardcodeados en el código.
-     3. **`3_insecure_storage_report.txt`:** Detección de transmisiones en texto plano (HTTP) y configuraciones de respaldo vulnerables.
+     3. **`3_insecure_storage_report.txt`:** Detección de transmisiones en texto plano en strings de código (HTTP), filtrado inteligente de URLs en comentarios o archivos de prueba (evitando falsos positivos), configuraciones vulnerables (allowBackup, MODE_WORLD) y riesgos reales de inyección SQL por concatenación en consultas SQLite crudas.
      4. **`4_cryptography_report.txt`:** Alertas sobre uso de algoritmos criptográficos débiles o inseguros (MD5, SHA-1, ECB).
      5. **`5_memory_leaks_threads_report.txt`:** **Detección Avanzada de Fugas de Memoria (Leaks) y Hilos (Threads)**. Analiza referencias estáticas peligrosas a Context/Activity, singletons con retención de Context, Coroutines companion scopes sin liberar, bloqueo del hilo principal con Thread.sleep, y registros de listeners (Broadcast/Sensor) sin cierre.
      6. **`6_compose_performance_report.txt`:** **Análisis de Rendimiento y Buenas Prácticas en Jetpack Compose**. Escanea inicializaciones de mutableStateOf sin remember, colores hexadecimales hardcodeados en composables, lecturas bloqueantes de archivos o SharedPreferences en el cuerpo del Composable, y uso de items() en LazyLayouts sin parámetros 'key' explícitos.
@@ -140,15 +140,50 @@ El proyecto cuenta con pipelines de integración continua (CI) configurados medi
    - **Notificaciones Seguras y Privadas a Discord:** Envía los 8 reportes de forma simultánea y 100% privada directamente a tu canal de Discord configurando `DISCORD_WEBHOOK_URL` en los secretos de GitHub, garantizando máxima seguridad en repositorios abiertos.
    - Genera un archivo comprimido descargable con los 8 reportes modulares (`modular-code-analysis-reports`) con retención de 14 días.
 
+3. **Android Unit Tests (`unit-tests.yml`):**
+   - Compila y ejecuta la suite completa de pruebas unitarias locales y Robolectric de la aplicación.
+   - Envía notificaciones de estado automáticas a tu canal de Discord (con estado Exitoso/Fallido, detalles del commit y enlace directo a la ejecución en GitHub) configurando la variable `DISCORD_UNIT_TESTS_WEBHOOK_URL`.
+
+4. **Android Screenshot & App Store Generator (`screenshot-tests.yml`):**
+   - Utiliza **Roborazzi y Robolectric** para renderizar y capturar las vistas clave de la aplicación en alta resolución (Onboarding, Squad de Jugadores, Gabinete Federal, etc.).
+   - Genera y transmite las imágenes directamente a tu Discord como archivos adjuntos mediante `multipart/form-data` utilizando el secreto `DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL`, permitiéndote previsualizar los assets de marketing o App Store directamente en el feed de chat.
+
+---
+
+## 🤖 CONFIGURACIÓN DE LOS 3 BOTS DE DISCORD
+
+Para automatizar la entrega de reportes y archivos visuales sin necesidad de descargar artefactos manuales desde GitHub, configura estos **3 Webhooks dedicados** en tu servidor de Discord. A continuación tienes la guía exacta de qué nombres ponerles y qué secretos configurar en GitHub:
+
+### 1. 🛡️ Bot 1: **Fafi Security Guard**
+*   **Nombre del Bot recomendado:** `Fafi Security Guard`
+*   **Canal sugerido en Discord:** `#auditorias-codigo` o `#seguridad`
+*   **Secreto en GitHub:** `DISCORD_WEBHOOK_URL`
+*   **Qué hace:** Envía simultáneamente los **8 reportes planos modulares (.txt)**. Audita modularidad (límite de 300 líneas), contraseñas/secretos filtrados, transmisiones inseguras HTTP y SQL Injections, criptografía débil, TODOs/FIXMEs, rendimiento en Jetpack Compose, fugas de memoria y hilos, e indicadores de depuración sucios.
+
+### 2. 🧪 Bot 2: **Fafi Unit Tests Guard**
+*   **Nombre del Bot recomendado:** `Fafi Unit Tests Guard`
+*   **Canal sugerido en Discord:** `#pruebas-unitarias` o `#ci-cd-builds`
+*   **Secreto en GitHub:** `DISCORD_UNIT_TESTS_WEBHOOK_URL`
+*   **Qué hace:** Notifica inmediatamente con cada push o Pull Request si las pruebas lógicas unitarias pasaron exitosamente (100% de éxito) o si ocurrieron regresiones y fallaron, incluyendo detalles del autor, rama y enlace directo a los logs en GitHub.
+
+### 3. 📸 Bot 3: **Fafi Visual Inspector**
+*   **Nombre del Bot recomendado:** `Fafi Visual Inspector`
+*   **Canal sugerido en Discord:** `#capturas-de-pantalla` o `#marketing-assets`
+*   **Secreto en GitHub:** `DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL`
+*   **Qué hace:** Genera capturas de pantalla de alta resolución de las pantallas de la aplicación utilizando datos reales (Onboarding, Plantilla de Jugadores, Panel de la Federación). Transmite los archivos gráficos en vivo directamente como archivos adjuntos (`.png`) al chat de Discord listos para marketing y la App Store.
+
 ---
 
 ## 🔒 VARIABLES DE ENTORNO Y SECRETOS
 
-Para cualquier integración con servicios de red externos o inteligencia artificial (como la API de Gemini), configure sus claves en el panel de **Secrets** de su entorno de compilación, las cuales se mapearán automáticamente en `BuildConfig`.
+Para cualquier integración con servicios de red externos, inteligencia artificial (como la API de Gemini) o entrega automatizada de alertas de calidad y testeo a Discord, configure sus variables en el panel de **Secrets** de su repositorio en GitHub:
 
 | Variable | Tipo | Descripción | Obligatoria | Ejemplo |
 | :--- | :--- | :--- | :---: | :--- |
 | `GEMINI_API_KEY` | String | Clave de acceso para la generación de resúmenes de prensa mediante IA | No (Opcional) | `AIzaSyB4x...` |
+| `DISCORD_WEBHOOK_URL` | String | Webhook para **Fafi Security Guard** (8 Reportes de análisis estático) | No | `https://discord.com/api/webhooks/...` |
+| `DISCORD_UNIT_TESTS_WEBHOOK_URL` | String | Webhook para **Fafi Unit Tests Guard** (Éxito o fallo de pruebas lógicas) | No | `https://discord.com/api/webhooks/...` |
+| `DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL` | String | Webhook para **Fafi Visual Inspector** (Galería de capturas y assets de marketing) | No | `https://discord.com/api/webhooks/...` |
 
 ---
 

@@ -180,7 +180,7 @@ fun CalendarScreen(
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(userLeague.clubs) { cl ->
+                            items(userLeague.clubs, key = { it.id }) { cl ->
                                 val isSel = selectedClubForCalendar?.id == cl.id
                                 Box(
                                     modifier = Modifier
@@ -215,7 +215,7 @@ fun CalendarScreen(
                         LazyRow(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            items(ligas) { lg ->
+                            items(ligas, key = { it.id }) { lg ->
                                 val isSel = selectedLeagueForCalendar?.id == lg.id
                                 Box(
                                     modifier = Modifier
@@ -242,7 +242,7 @@ fun CalendarScreen(
                             LazyRow(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(lg.clubs) { cl ->
+                                items(lg.clubs, key = { it.id }) { cl ->
                                     val isSel = selectedClubForCalendar?.id == cl.id
                                     Box(
                                         modifier = Modifier
@@ -288,7 +288,7 @@ fun CalendarScreen(
         } else {
             val userLgCurrentRound = selectedLeagueForCalendar?.currentRound ?: 0
             
-            items(displayedMatches.size) { index ->
+            items(count = displayedMatches.size, key = { index -> displayedMatches[index].id }) { index ->
                 val match = displayedMatches[index]
                 val roundNumber = index + 1
                 val matchDate = getDateForRound(roundNumber)

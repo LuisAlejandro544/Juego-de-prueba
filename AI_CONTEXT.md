@@ -91,18 +91,31 @@ Todo agente de IA o desarrollador que colabore en este repositorio debe respetar
     *   Cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** será reportado por `code-analysis.yml` en `1_line_limits_report.txt`. Mantén los composables limpios y desacoplados.
 2.  **Prevención de filtrado de secretos:**
     *   No hardcodear claves bajo ninguna circunstancia. El pipeline audita tokens y contraseñas (`2_security_secrets_report.txt`). Usa `BuildConfig` para cargar variables del entorno.
-3.  **Rendimiento y Buenas Prácticas en Jetpack Compose:**
+3.  **Seguridad en Transmisiones y Almacenamiento Local (Reporte 3):**
+    *   **❌ NO** declares enlaces HTTP inseguros (`http://`) en strings de código productivo real; el escáner los auditará en `3_insecure_storage_report.txt` descartando con filtros inteligentes comentarios de documentación y archivos de prueba.
+    *   **❌ NO** concatenes variables de texto directamente en consultas SQL crudas en SQLite (`rawQuery` o `execSQL`); usa siempre placeholders de vinculación segura (`?`) para evitar inyecciones SQL.
+    *   **❌ NO** crees archivos ni SharedPreferences usando modos obsoletos vulnerables (`MODE_WORLD_READABLE` o `MODE_WORLD_WRITEABLE`).
+4.  **Rendimiento y Buenas Prácticas en Jetpack Compose:**
     *   **❌ NO** inicialices `mutableStateOf()` sin un bloque `remember` o `rememberSaveable` dentro de un Composable (reporte `6_compose_performance_report.txt`).
     *   **✅ SÍ** provee un parámetro `key` explícito al utilizar `items()` en `LazyColumn`/`LazyRow` para optimizar las recomposiciones.
     *   **❌ NO** realices llamadas directas de lectura/escritura de archivos o de persistencia (I/O bloqueante) dentro del cuerpo directo de un Composable; delega en ViewModels o bloques de efectos controlados como `LaunchedEffect`.
     *   **❌ NO** uses colores hexadecimales hardcodeados (como `Color(0xFF...)`) en composables; utiliza los esquemas dinámicos del `MaterialTheme.colorScheme`.
-4.  **Detección de Fugas de Memoria y Bloqueo de Hilos:**
+5.  **Detección de Fugas de Memoria y Bloqueo de Hilos:**
     *   **❌ NO** declares variables de tipo `Context`, `Activity` o `View` estáticas o dentro de companion objects de Kotlin (reporte `5_memory_leaks_threads_report.txt`).
     *   **❌ NO** inyectes ni retengas instancias de `Context` de forma directa en singletons (`object`); usa siempre `context.applicationContext`.
     *   **❌ NO** utilices `Thread.sleep()` en hilos de producción para no bloquear el hilo de interfaz de usuario. Usa Coroutines y su función suspendible `delay()`.
     *   **✅ SÍ** remueve o desregistra siempre listeners, receptores de broadcast (`registerReceiver` / `unregisterReceiver`) o sensores en los ciclos de vida correctos.
-5.  **Compilaciones eficientes:**
+6.  **Compilaciones eficientes:**
     *   El empaquetado del APK de depuración se activa de manera selectiva. Los cambios menores exclusivos en archivos markdown de documentación (`.md`) o configuraciones externas no disparan la compilación asíncrona, pero los cambios en `/app` sí lo harán.
-6.  **Uso de Logs seguros:**
+7.  **Uso de Logs seguros:**
     *   Evita el uso de `printStackTrace()` y `System.out.println()` en el código de producción de la aplicación principal para no generar alertas en el reporte `8_debugging_practices_report.txt`. Utiliza los canales de log de Android estándar (`android.util.Log`).
+8.  **Suite de Pruebas y Generación de Capturas Visuales:**
+    *   **✅ SÍ** ejecuta las pruebas unitarias y de Robolectric localmente con `gradle :app:testDebugUnitTest`.
+    *   **✅ SÍ** regenera o graba las capturas de pantalla de referencia y marketing de las tiendas usando `gradle :app:recordRoborazziDebug` antes de subir cambios visuales importantes.
+    *   **❌ NO** intentes ejecutar pruebas que requieran un emulador de Android (`androidTest/` con Espresso o ADB) en este entorno de compilación, ya que no se dispone de dispositivo físico ni emulador local activo.
+9.  **Configuración de Webhooks de Discord (3 Bots):**
+    *   **Fafi Security Guard** (`DISCORD_WEBHOOK_URL`): Bot para reporte automático de análisis estático (8 archivos .txt).
+    *   **Fafi Unit Tests Guard** (`DISCORD_UNIT_TESTS_WEBHOOK_URL`): Bot para notificar estado de pruebas unitarias locales.
+    *   **Fafi Visual Inspector** (`DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL`): Bot para enviar directamente las capturas gráficas de la App Store en formato de imagen (.png) adjunta.
+
 

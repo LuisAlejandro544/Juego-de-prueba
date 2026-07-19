@@ -77,10 +77,10 @@ fun SquadScreen(
                             Column(modifier = Modifier.weight(1f)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     val badgeBg = when (player.position) {
-                                        Position.GK -> Color(0xFFEA580C)
-                                        Position.DEF -> Color(0xFF2563EB)
-                                        Position.MID -> Color(0xFF0D9488)
-                                        Position.ATT -> Color(0xFFDC2626)
+                                        Position.GK -> PositionOrangeGK
+                                        Position.DEF -> StatusBlue
+                                        Position.MID -> StatusTeal
+                                        Position.ATT -> StatusRed
                                     }
                                     Text(
                                         text = player.position.name,

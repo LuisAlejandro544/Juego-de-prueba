@@ -185,9 +185,9 @@ fun CalendarMatchRow(
                     val isDraw = match.homeGoals == match.awayGoals
                     
                     val (badgeCol, badgeBg, badgeTxt) = when {
-                        isWin -> Triple(Color(0xFF10B981), Color(0xFF10B981).copy(alpha = 0.1f), "W")
-                        isDraw -> Triple(Color(0xFF6B7280), Color(0xFF6B7280).copy(alpha = 0.1f), "D")
-                        else -> Triple(Color(0xFFEF4444), Color(0xFFEF4444).copy(alpha = 0.1f), "L")
+                        isWin -> Triple(StatusGreen, StatusGreen.copy(alpha = 0.1f), "W")
+                        isDraw -> Triple(StatusGray, StatusGray.copy(alpha = 0.1f), "D")
+                        else -> Triple(StatusInsecureRed, StatusInsecureRed.copy(alpha = 0.1f), "L")
                     }
                     
                     Box(
