@@ -269,21 +269,6 @@ jobs:
           
           echo "✅ Escaneo modularizado completado con éxito."
 
-      - name: Upload Analysis Reports as Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: modular-code-analysis-reports
-          path: |
-            1_line_limits_report.txt
-            2_security_secrets_report.txt
-            3_insecure_storage_report.txt
-            4_cryptography_report.txt
-            5_memory_leaks_threads_report.txt
-            6_compose_performance_report.txt
-            7_todos_fixmes_report.txt
-            8_debugging_practices_report.txt
-          retention-days: 14
-
       - name: Send Report to Discord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}

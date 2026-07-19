@@ -119,8 +119,8 @@ class StoreScreenshotsTest {
       personalWealth = 150_000L,
       currentClubId = "real_madrid",
       currentClubName = "Fafi Real Madrid",
-      politicalAffiliation = "EXPANSIVO",
-      isSummoned = true
+      isSummoned = true,
+      summonedNationalTeam = "Venezuela"
     )
 
     composeTestRule.setContent {
