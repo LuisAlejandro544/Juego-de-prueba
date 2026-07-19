@@ -90,7 +90,7 @@ Todo agente de IA o desarrollador que colabore en este repositorio debe respetar
 1.  **Mantener la modularidad de archivos:**
     *   Cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** será reportado por el workflow de análisis de calidad `code-analysis.yml`. Mantén los composables limpios y desacoplados.
 2.  **Prevención de filtrado de secretos:**
-    *   No hardcodear claves bajo ninguna circunstancia. El pipeline de seguridad audita asignaciones explícitas de tokens y contraseñas. Usa `BuildConfig` para cargar variables inyectadas del entorno.
+    *   No hardcodear claves bajo ninguna circunstancia. El pipeline de seguridad audita asignaciones explícitas de tokens y contraseñas. Usa `BuildConfig` para cargar variables inyectadas del entorno. Los reportes de calidad y seguridad pueden enviarse de forma segura y privada a tu canal de Discord configurando `DISCORD_WEBHOOK_URL` en los secretos de GitHub.
 3.  **Compilaciones eficientes:**
     *   El empaquetado del APK de depuración se activa de manera selectiva. Los cambios menores exclusivos en archivos markdown de documentación (`.md`) o configuraciones externas no disparan la compilación asíncrona, pero los cambios en `/app` sí lo harán.
 4.  **Uso de Logs seguros:**

@@ -23,9 +23,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import com.example.engine.GameEngine
 import com.example.model.*
 import com.example.ui.MainDashboard
@@ -88,7 +91,8 @@ fun OnboardingScreen(
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .background(PitchDarkBg),
+                    .background(PitchDarkBg)
+                    .verticalScroll(rememberScrollState()),
                 contentAlignment = Alignment.Center
             ) {
                 Card(
@@ -133,11 +137,15 @@ fun OnboardingScreen(
                             value = inputName,
                             onValueChange = { inputName = it },
                             label = { Text("Nombre del Mánager", color = GrassEmerald) },
+                            textStyle = TextStyle(color = TextPrimary, fontSize = 16.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
                                 focusedBorderColor = GrassEmerald,
                                 unfocusedBorderColor = DarkSteel,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
+                                focusedLabelColor = GrassEmerald,
+                                unfocusedLabelColor = TextSecondary,
+                                cursorColor = GrassEmerald
                             ),
                             singleLine = true,
                             modifier = Modifier
@@ -614,11 +622,15 @@ fun OnboardingScreen(
                                     value = customClubName,
                                     onValueChange = { customClubName = it },
                                     label = { Text("Nombre de la Institución", color = GrassEmerald) },
+                                    textStyle = TextStyle(color = TextPrimary, fontSize = 16.sp),
                                     colors = OutlinedTextFieldDefaults.colors(
+                                        focusedTextColor = TextPrimary,
+                                        unfocusedTextColor = TextPrimary,
                                         focusedBorderColor = GrassEmerald,
                                         unfocusedBorderColor = DarkSteel,
-                                        focusedTextColor = TextPrimary,
-                                        unfocusedTextColor = TextPrimary
+                                        focusedLabelColor = GrassEmerald,
+                                        unfocusedLabelColor = TextSecondary,
+                                        cursorColor = GrassEmerald
                                     ),
                                     singleLine = true,
                                     modifier = Modifier.fillMaxWidth()

@@ -133,6 +133,7 @@ El proyecto cuenta con pipelines de integración continua (CI) configurados medi
    - **Escaneo de Seguridad:** Rastrea asignaciones de llaves API, secretos y tokens hardcodeados en el código.
    - **Tareas Pendientes (TODO/FIXME):** Centraliza todos los recordatorios técnicos de refactorización pendientes.
    - **Malas Prácticas:** Detecta la depuración cruda en archivos principales (como `System.out.println` o `printStackTrace()`) promoviendo el estándar de logs en Android.
+   - **Notificaciones Seguras y Privadas a Discord:** Permite enviar el reporte automáticamente y de manera 100% privada a tu canal de Discord en lugar de depender de artefactos públicos. Para activarlo, añade la URL de tu webhook de Discord en los secretos de tu repositorio de GitHub como `DISCORD_WEBHOOK_URL`.
    - Genera un archivo descargable de reporte independiente en formato plano (`code-analysis-report.txt`) con retención de 14 días.
 
 ---

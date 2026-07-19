@@ -190,6 +190,26 @@ jobs:
           
           cat "$REPORT_FILE"
 
+      - name: Send Report to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "=============================================================================================="
+            echo "⚠️  AVISO: La variable secreta DISCORD_WEBHOOK_URL no está configurada en los secretos de GitHub."
+            echo "Para recibir reportes de seguridad privados directamente en tu canal de Discord:"
+            echo "1. Ve a los ajustes de tu repositorio en GitHub -> Secrets and variables -> Actions."
+            echo "2. Crea un nuevo secreto llamado 'DISCORD_WEBHOOK_URL'."
+            echo "3. Pega la URL del Webhook de tu canal de Discord."
+            echo "=============================================================================================="
+          else
+            echo "Enviando reporte detallado de calidad y seguridad a Discord de forma segura..."
+            curl -H "Content-Type: multipart/form-data" \
+              -F "file=@code-analysis-report.txt" \
+              -F "payload_json={\"content\": \"🚨 **¡Análisis de Calidad y Seguridad Finalizado!**\n\nSe ha completado el escaneo estático automatizado para la rama \`${{ github.ref_name }}\`.\n\n* **Commit:** \`${{ github.sha }}\`\n* **Autor:** ${{ github.actor }}\n\nAdjuntamos el reporte técnico generado para que puedas revisar posibles vulnerabilidades, fugas de secretos y límites de líneas de código de manera 100% privada sin exponerlo en los artefactos públicos de GitHub si tu repo es abierto. 🔒\"}" \
+              "$DISCORD_WEBHOOK"
+          fi
+
       - name: Upload Quality and Security Report
         uses: actions/upload-artifact@v4
         with:
