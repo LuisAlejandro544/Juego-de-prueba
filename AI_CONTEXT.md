@@ -118,4 +118,21 @@ Todo agente de IA o desarrollador que colabore en este repositorio debe respetar
     *   **Fafi Unit Tests Guard** (`DISCORD_UNIT_TESTS_WEBHOOK_URL`): Bot para notificar estado de pruebas unitarias locales.
     *   **Fafi Visual Inspector** (`DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL`): Bot para enviar directamente las capturas gráficas de la App Store en formato de imagen (.png) adjunta.
 
+---
+
+## 🎵 7. SISTEMA DE AUDIO, EFECTOS DE SONIDO Y MULTIMEDIA
+
+Para dotar al simulador de una inmersión auditiva realista sin inflar el tamaño de instalación de la aplicación, FEDEBOL Manager cuenta con las siguientes directrices de audio:
+
+1.  **Rotación Aleatoria Anti-Repetición:**
+    *   Se dispone de **7 silbidos arbitrales únicos** (`whistle0.ogg` a `whistle6.ogg`) en formato Ogg Vorbis de alta calidad.
+    *   Cada vez que ocurre una transición de fase en el simulador de partidos en vivo, se selecciona un silbato al azar para mantener la transmisión fresca y realista.
+2.  **Compresión sin Pérdida Auditiva:**
+    *   **❌ NO** usar archivos `.wav` pesados para efectos de sonido largos o música de fondo.
+    *   **✅ SÍ** utilizar compresión Ogg Vorbis de alto rendimiento (logrando reducciones superiores al 96% en peso comparado con archivos WAV tradicionales, con un consumo mínimo de memoria).
+3.  **Estado de Desarrollo de Audio (Siguientes Fases):**
+    *   *Música de Fondo:* Se encuentra planificada la incorporación de música instrumental de fondo relajante para los menús principales y de oficina.
+    *   *Ambiente e Himnos:* Se planea la integración de efectos sonoros para celebraciones de goles, tarjetas, y coros de las hinchadas para las tribunas virtuales.
+
+
 

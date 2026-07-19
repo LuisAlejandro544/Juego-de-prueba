@@ -209,4 +209,25 @@ El repositorio centraliza su orquestación y validación mediante flujos automat
 *   **Generador Visual de Capturas (`screenshot-tests.yml`):** Re-renderiza las pantallas lógicas principales mediante Roborazzi y extrae las vistas en alta resolución para marketing de tiendas, cargándolas y enviándolas como adjuntos visuales nativos al bot de Discord **`Fafi Visual Inspector`** mediante el secreto `DISCORD_SCREENSHOT_TESTS_WEBHOOK_URL`.
 *   **Emisión Modular y Reporte de Vulnerabilidades (`code-analysis.yml`):** Toda la auditoría estática de código se divide en **8 reportes planos independientes (.txt)**, transmitidos como mensajes de reporte de vulnerabilidades y buenas prácticas por el bot **`Fafi Security Guard`** utilizando el secreto `DISCORD_WEBHOOK_URL`.
 
+---
+
+## 🔊 8. ARQUITECTURA DE RECURSOS DE AUDIO Y MULTIMEDIA
+
+El sistema de audio está diseñado para ser liviano, preventivo contra fugas de memoria y no repetitivo:
+
+### Recursos Físicos (`/app/src/main/res/raw/`):
+*   `whistle0.ogg` a `whistle6.ogg`: Sonidos de silbato arbitral optimizados en formato de compresión Ogg Vorbis. El peso total del conjunto de sonidos es de apenas ~130KB, lo que previene el sobrepeso de la aplicación APK final.
+
+### Gestión de Reproducción en Jetpack Compose:
+*   La pantalla `LiveMatchTickerScreen.kt` utiliza `android.media.MediaPlayer` para reproducir los silbatos de manera asíncrona.
+*   **Rotación Dinámica:** Se define una lista inmutable de identificadores de recursos `listOf(R.raw.whistle0, R.raw.whistle1, ...)` y se selecciona un elemento al azar mediante `.random()` en cada activación.
+*   **Prevención de Fugas de Memoria:** Cada instancia de `MediaPlayer` se libera explícitamente en su oyente de finalización:
+    ```kotlin
+    mp?.setOnCompletionListener { mediaPlayer ->
+        mediaPlayer.release()
+    }
+    ```
+    Esto garantiza que el decodificador de hardware de audio de Android libere de inmediato los canales y decodificadores consumidos, evitando el agotamiento de recursos del sistema en simulaciones continuas.
+
+
 

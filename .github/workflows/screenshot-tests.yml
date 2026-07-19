@@ -5,10 +5,20 @@ on:
     branches: [ "main", "master", "develop" ]
     paths:
       - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/screenshot-tests.yml'
   pull_request:
     branches: [ "main", "master", "develop" ]
     paths:
       - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/screenshot-tests.yml'
   workflow_dispatch:
 
 jobs:
@@ -29,6 +39,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          # Automatically uses build-cache and handles dependency caching
+          cache-read-only: false
 
       - name: Generate Reference & Store Screenshots (Roborazzi Record)
         run: |
@@ -74,10 +87,3 @@ jobs:
             
             eval $CURL_CMD
           fi
-
-      - name: Upload Generated Images as Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: fafi-app-screenshots
-          path: app/src/test/screenshots/
-          retention-days: 7

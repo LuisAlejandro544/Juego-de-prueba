@@ -36,31 +36,44 @@ fun HeaderBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column {
+            // 1. Manager details (Left)
+            Column(
+                modifier = Modifier.weight(1.1f),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
                     text = "MÁNAGER: ${manager.name.uppercase()}",
                     color = TextPrimary,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
+                    fontFamily = FontFamily.Monospace,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = "Licencia: ${manager.license} | Reputación: ${manager.reputation}/100",
                     color = TextSecondary,
-                    fontSize = 12.sp
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
+            // 2. Club details (Middle)
             if (club != null) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.weight(1.0f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = club.name.uppercase(),
                         color = GlacierBlue,
-                        fontSize = 15.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.ExtraBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -68,30 +81,43 @@ fun HeaderBar(
                     Text(
                         text = "Balance: $${String.format("%,d", club.budget)}",
                         color = TextPrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
+            } else {
+                Spacer(modifier = Modifier.weight(1.0f))
             }
 
+            // 3. Date & Button section (Right)
             Row(
+                modifier = Modifier.weight(1.4f),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.End
             ) {
-                Column(horizontalAlignment = Alignment.End) {
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = "FECHA ACTUAL",
                         color = TextSecondary,
-                        fontSize = 10.sp,
+                        fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        maxLines = 1
                     )
                     Text(
                         text = formatLocalDateToSpanish(currentDate).uppercase(),
                         color = GlacierBlue,
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily.Monospace
+                        fontFamily = FontFamily.Monospace,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
@@ -99,18 +125,19 @@ fun HeaderBar(
                     onClick = onSimulateClick,
                     colors = ButtonDefaults.buttonColors(containerColor = GlacierBlue, contentColor = PitchDarkBg),
                     enabled = !isSimulating,
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
                     modifier = Modifier
                         .testTag("simulate_button")
-                        .height(44.dp)
+                        .height(38.dp)
                 ) {
                     if (isSimulating) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), color = PitchDarkBg)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Calculando...", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        CircularProgressIndicator(modifier = Modifier.size(14.dp), color = PitchDarkBg, strokeWidth = 2.dp)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Calculando...", fontWeight = FontWeight.Bold, fontSize = 11.sp, maxLines = 1)
                     } else {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Siguiente Jornada")
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("SIMULAR JORNADA", fontWeight = FontWeight.ExtraBold, fontSize = 13.sp)
+                        Icon(Icons.Default.PlayArrow, contentDescription = "Siguiente Jornada", modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("SIMULAR JORNADA", fontWeight = FontWeight.ExtraBold, fontSize = 11.sp, maxLines = 1)
                     }
                 }
             }

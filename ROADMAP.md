@@ -82,4 +82,18 @@ Este documento detalla la planificación estratégica, el estado actual de desar
 *   **Futuras Automatizaciones de GitHub Actions (PLANIFICADO):**
     *   *Linter Integrado:* Ejecución automática de Kotlin Linter/Formatter (como Spotless o ktlint) en cada Pull Request para forzar el estilo de código.
 
+---
+
+## 🎵 FASE 8: INMERSIÓN AUDITIVA, MÚSICA Y EFECTOS DE SONIDO (PARCIALMENTE COMPLETADO ⏳)
+
+*   **Sistema de Transmisión Dinámica y Silbatos (COMPLETADO ✅):**
+    *   Transición minuto a minuto del partido con un sistema inteligente de audio en formato Ogg Vorbis.
+    *   Selección aleatoria de **7 silbatos de árbitro únicos** (`whistle0` a `whistle6`) para evitar la repetición del sonido.
+    *   Optimización de compresión al 96% de reducción en el espacio de instalación (130KB en total para 7 silbidos vs 3.5MB de un único archivo WAV).
+*   **Música de Fondo (PLANIFICADO):**
+    *   Música instrumental inmersiva y tranquila para la navegación por la oficina del mánager, menús principales, y pantallas de fichajes.
+*   **Ambiente de Tribunas y Celebraciones (PLANIFICADO):**
+    *   Efectos de sonido realistas para celebraciones de goles de local o visitante, abucheos, tarjetas amarillas/rojas, e himnos de las confederaciones ficticias (SUDAMBOL, EUROBOL, etc.).
+
+
 

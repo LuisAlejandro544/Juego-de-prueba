@@ -53,6 +53,16 @@ El juego cuenta con un planificador temporal dinámico con las siguientes caract
 
 ---
 
+## 🔊 AUDIO, EFECTOS DE SONIDO Y SIMULACIÓN EN VIVO
+
+El simulador cuenta con una experiencia de partido en vivo inmersiva en la pestaña de transmisión:
+*   **Simulación Dinámica:** El cotejo corre de manera realista minuto a minuto dividido en primer tiempo, entretiempo de descanso, segundo tiempo y fin del partido, con controles de pausa/reproducción y aceleración del tiempo de 1x a 10x.
+*   **Cronología de Juego Realista:** Se generan eventos dinámicos y comentarios tácticos minuciosos minuto a minuto adaptados a la marcha del cotejo.
+*   **Rotación Inteligente de Sonidos de Silbato:** Integración de un sistema que rota de forma aleatoria entre **7 silbidos arbitrales únicos** de metal y plástico (optimizados en formato ligero `.ogg` para ahorrar espacio en disco, logrando un ahorro de más del 96%) para evitar la monotonía auditiva.
+*   **Próximos Pasos (En Desarrollo):** Incorporación de música de fondo ambiental, sonidos de tribunas/goles y narraciones detalladas.
+
+---
+
 ## 🎨 DISEÑO ESTÉTICO: AZUL GLACIAR Y ZAFIRO PROFUNDO
 
 Para optimizar la experiencia durante jornadas de juego largas, se ha diseñado una interfaz de usuario cómoda para la vista basada en:
