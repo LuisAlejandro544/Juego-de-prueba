@@ -118,6 +118,25 @@ El proyecto incluye soporte para pruebas unitarias rápidas y pruebas integrales
 
 ---
 
+## 🤖 INTEGRACIÓN CONTINUA (GITHUB ACTIONS)
+
+El proyecto cuenta con pipelines de integración continua (CI) configurados mediante **GitHub Actions** para automatizar la verificación del código, seguridad y compilación. En el futuro, se podrán incorporar workflows adicionales de pruebas instrumentadas o despliegue automatizado:
+
+1. **Build Debug APK (`build-debug-apk.yml`):**
+   - Compila el proyecto de forma automática.
+   - **Optimización de Disparador (Path Filtering):** Solo se activa cuando se detectan modificaciones reales dentro del subdirectorio `/app` (código fuente y recursos directos de la aplicación), evitando compilaciones redundantes por cambios en documentación o scripts de soporte.
+   - Genera y emite un artefacto descargable con el archivo APK depurado (`app-debug.apk`) con retención de 7 días.
+
+2. **Code Quality & Security Scan (`code-analysis.yml`):**
+   - Ejecuta un análisis estático profundo del repositorio en busca de malas prácticas y vulnerabilidades.
+   - **Análisis de Tamaño de Archivo:** Alerta y reporta sobre cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** para garantizar modularidad y limpieza arquitectónica.
+   - **Escaneo de Seguridad:** Rastrea asignaciones de llaves API, secretos y tokens hardcodeados en el código.
+   - **Tareas Pendientes (TODO/FIXME):** Centraliza todos los recordatorios técnicos de refactorización pendientes.
+   - **Malas Prácticas:** Detecta la depuración cruda en archivos principales (como `System.out.println` o `printStackTrace()`) promoviendo el estándar de logs en Android.
+   - Genera un archivo descargable de reporte independiente en formato plano (`code-analysis-report.txt`) con retención de 14 días.
+
+---
+
 ## 🔒 VARIABLES DE ENTORNO Y SECRETOS
 
 Para cualquier integración con servicios de red externos o inteligencia artificial (como la API de Gemini), configure sus claves en el panel de **Secrets** de su entorno de compilación, las cuales se mapearán automáticamente en `BuildConfig`.

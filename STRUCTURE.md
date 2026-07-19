@@ -181,3 +181,21 @@ La estructura física de los archivos fuentes ha sido rediseñada para respetar 
     *   *Mitigación:* Se implementa persistencia asíncrona diferida estructurada delegando a `Dispatchers.IO` a través del sistema de serialización local estructurado. No se guarda toda la base de datos de una vez; se dividen en archivos de lote (`saveClubsBatch`, `savePlayersBatch`) manejados de manera reactiva por coroutines y archivos planos ligeros como `calendar.txt` para la fecha.
 2.  **Riesgo: Consistencia del calendario tras fundar un club personalizado.**
     *   *Mitigación:* Al crear un club nuevo, el sistema reemplaza al último club de la liga del país correspondiente para mantener el número de clubes par (6 clubes). Posteriormente, invoca inmediatamente a `generateSchedule()` para reconstruir el fixture deportivo de partidos sin romper el motor de simulación.
+
+---
+
+## 🤖 7. AUTOMATIZACIÓN Y PIPELINES DE GESTIÓN (CI/CD)
+
+El repositorio centraliza su orquestación y validación mediante flujos automatizados de GitHub Actions ubicados en la carpeta raíz:
+
+```text
+/.github/
+└── workflows/
+    ├── build-debug-apk.yml     # Orquestación de compilación optimizada por ruta (/app)
+    └── code-analysis.yml       # Escaneo estático de calidad, tamaño y seguridad
+```
+
+*   **Verificación de Modularidad (Límite de 300 líneas):** El analizador estático recopila periódicamente todos los archivos que exceden este umbral, estimulando al desarrollador a delegar lógicas complejas en componentes desacoplados dentro del paquete `com.example.ui.screens` o clases auxiliares del motor.
+*   **Aislamiento de Secretos de Compilación:** Evitamos almacenar credenciales hardcodeadas (como claves de la API de Gemini) rastreando fugas con expresiones regulares en archivos de código antes de cada integración de código.
+*   **Escalabilidad de Automatizaciones Futuras:** La arquitectura actual está lista para incorporar análisis sintácticos de linting y ejecuciones de suite de pruebas unitarias locales automatizadas sobre JVM de manera asíncrona.
+

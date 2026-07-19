@@ -79,3 +79,20 @@ El `GameEngine` actúa como la única fuente de verdad (*Single Source of Truth*
 *   **❌ NO** agregues dependencias externas a `libs.versions.toml` sin revisar primero su compatibilidad con la versión activa de Kotlin del proyecto.
 *   **❌ NO** uses variables mutables globales que no estén vinculadas al hilo seguro del motor de persistencia estructurado.
 *   **❌ NO** asumas que el almacenamiento local siempre tiene datos válidos. Implementa bloques `try-catch` con valores de respaldo al deserializar archivos JSON o planos de disco.
+*   **❌ NO** crees o extiendas archivos de código individuales que superen las **300 líneas de código**. Delega lógica pesada en pantallas modularizadas independientes, clases helpers o módulos de lógica pura.
+
+---
+
+## 🤖 6. CUMPLIMIENTO DE PIPELINES DE AUTOMATIZACIÓN (CI/CD)
+
+Todo agente de IA o desarrollador que colabore en este repositorio debe respetar las reglas validadas por nuestros workflows automáticos de GitHub Actions:
+
+1.  **Mantener la modularidad de archivos:**
+    *   Cualquier archivo de código (`.kt`, `.kts`, `.java`, `.gradle`) que supere las **300 líneas de código** será reportado por el workflow de análisis de calidad `code-analysis.yml`. Mantén los composables limpios y desacoplados.
+2.  **Prevención de filtrado de secretos:**
+    *   No hardcodear claves bajo ninguna circunstancia. El pipeline de seguridad audita asignaciones explícitas de tokens y contraseñas. Usa `BuildConfig` para cargar variables inyectadas del entorno.
+3.  **Compilaciones eficientes:**
+    *   El empaquetado del APK de depuración se activa de manera selectiva. Los cambios menores exclusivos en archivos markdown de documentación (`.md`) o configuraciones externas no disparan la compilación asíncrona, pero los cambios en `/app` sí lo harán.
+4.  **Uso de Logs seguros:**
+    *   Evita el uso de `printStackTrace()` y `System.out.println()` en el código de producción de la aplicación principal para no generar alertas en el reporte automatizado de malas prácticas. Utiliza los canales de log de Android estándar (`android.util.Log`).
+

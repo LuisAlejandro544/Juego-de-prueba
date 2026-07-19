@@ -63,3 +63,17 @@ Este documento detalla la planificación estratégica, el estado actual de desar
 *   **Directorio `/Mods` Activo:**
     *   Carga de archivos de texto JSON prioritarios para reemplazar los nombres ficticios generados proceduralmente por bases de datos de clubes y futbolistas reales creadas por la comunidad.
     *   *Scripting de Reglas (Lua):* Habilitación de scripts Lua ligeros para permitir a los modders definir formatos personalizados de copas e impuestos de fichajes sin alterar el código base de Kotlin.
+
+---
+
+## 🤖 FASE 7: AUTOMATIZACIÓN Y CI/CD AVANZADO (INTEGRADO PARCIALMENTE ⏳)
+
+*   **Optimización del Pipeline de Construcción (COMPLETADO ✅):**
+    *   Disparador del empaquetado APK configurado con filtros de ruta (`paths`) en GitHub Actions para compilar únicamente si se altera la carpeta `/app`.
+*   **Pipeline de Calidad y Seguridad de Código (COMPLETADO ✅):**
+    *   Verificaciones de límites de tamaño de archivo (300 líneas), detección de fugas de API Keys y recopilación de comentarios TODO mediante análisis estático automatizado en la nube.
+*   **Futuras Automatizaciones de GitHub Actions (PLANIFICADO):**
+    *   *Linter Integrado:* Ejecución automática de Kotlin Linter/Formatter (como Spotless o ktlint) en cada Pull Request para forzar el estilo de código.
+    *   *Ejecución de Pruebas Unitarias:* Integrar el comando `gradle :app:testDebugUnitTest` para validar la lógica del motor procedural y prevenir regresiones antes de fusionar código a la rama principal.
+    *   *Pruebas Visuales Automatizadas (Roborazzi):* Ejecución en la nube de comparativas de capturas de pantalla para validar que las pantallas de juego de Material Design 3 se rendericen exactamente como se planificó.
+
