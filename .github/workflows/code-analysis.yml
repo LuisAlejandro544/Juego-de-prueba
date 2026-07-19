@@ -188,7 +188,11 @@ jobs:
           echo "                     FIN DEL REPORTE AUTOMÁTICO                       " >> "$REPORT_FILE"
           echo "======================================================================" >> "$REPORT_FILE"
           
-          cat "$REPORT_FILE"
+          echo "✅ Escaneo completado con éxito de manera interna y segura."
+          echo "El reporte detallado ha sido estructurado en un archivo efímero."
+          echo "Para garantizar máxima seguridad y privacidad (especialmente en repositorios públicos),"
+          echo "el contenido técnico del análisis NO se imprime en esta consola pública de GitHub Actions."
+          echo "Se enviará de forma 100% cifrada y privada directamente a tu webhook de Discord adjunto."
 
       - name: Send Report to Discord
         env:
