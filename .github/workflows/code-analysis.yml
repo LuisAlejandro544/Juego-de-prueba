@@ -210,10 +210,4 @@ jobs:
               "$DISCORD_WEBHOOK"
           fi
 
-      - name: Upload Quality and Security Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: code-analysis-report
-          path: code-analysis-report.txt
-          if-no-files-found: error
-          retention-days: 14
+
