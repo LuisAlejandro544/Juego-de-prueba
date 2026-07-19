@@ -3,7 +3,6 @@ package com.example.engine
 import android.util.Log
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
-import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -28,16 +27,20 @@ object CryptoHelper {
             System.arraycopy(iv, 0, combinedBytes, 0, iv.size)
             System.arraycopy(encryptedBytes, 0, combinedBytes, iv.size, encryptedBytes.size)
             
-            Base64.getEncoder().encodeToString(combinedBytes)
+            android.util.Base64.encodeToString(combinedBytes, android.util.Base64.NO_WRAP)
         } catch (e: Exception) {
             Log.e("CryptoHelper", "AES/CBC encryption failed, falling back to base64", e)
-            Base64.getEncoder().encodeToString(data.toByteArray(StandardCharsets.UTF_8))
+            try {
+                android.util.Base64.encodeToString(data.toByteArray(StandardCharsets.UTF_8), android.util.Base64.NO_WRAP)
+            } catch (ex: Exception) {
+                data
+            }
         }
     }
 
     fun decrypt(encryptedData: String): String {
         return try {
-            val decodedBytes = Base64.getDecoder().decode(encryptedData)
+            val decodedBytes = android.util.Base64.decode(encryptedData, android.util.Base64.DEFAULT)
             if (decodedBytes.size < 16) {
                 return tryLegacyDecrypt(encryptedData)
             }
@@ -59,20 +62,59 @@ object CryptoHelper {
     }
 
     private fun tryLegacyDecrypt(encryptedData: String): String {
-        return try {
-            val legacyKey = "FAFI_MANAGER_KEY_FAFI_MANAGER_K"
-            val legacyKeySpec = SecretKeySpec(legacyKey.toByteArray(StandardCharsets.UTF_8), "AES")
-            val cipher = Cipher.getInstance("AES/ECB/PKCS5Padding")
-            cipher.init(Cipher.DECRYPT_MODE, legacyKeySpec)
-            val decodedBytes = Base64.getDecoder().decode(encryptedData)
-            String(cipher.doFinal(decodedBytes), StandardCharsets.UTF_8)
+        val decodedBytes = try {
+            android.util.Base64.decode(encryptedData, android.util.Base64.DEFAULT)
         } catch (e: Exception) {
-            Log.e("CryptoHelper", "Legacy decryption failed, trying plain base64 decode", e)
+            return encryptedData
+        }
+
+        // We will try various potential keys to find a valid decryption
+        val potentialKeys = listOf(
+            "FAFI_MANAGER_KEY_FAFI_MANAGER_K3",
+            "FAFI_MANAGER_KEY_FAFI_MANAGER_K2",
+            "FAFI_MANAGER_KEY_FAFI_MANAGER_K1",
+            "FAFI_MANAGER_KEY_FAFI_MANAGER_K".padEnd(32, '0'),
+            "FAFI_MANAGER_KEY_FAFI_MANAGER_K".padEnd(32, '\u0000'),
+            "FAFI_MANAGER_KEY"
+        )
+
+        for (key in potentialKeys) {
             try {
-                String(Base64.getDecoder().decode(encryptedData), StandardCharsets.UTF_8)
-            } catch (ex: Exception) {
-                encryptedData
+                val keySpec = SecretKeySpec(key.toByteArray(StandardCharsets.UTF_8), "AES")
+                
+                // Try ECB first (as legacy might have used ECB)
+                try {
+                    val cipherECB = Cipher.getInstance("AES/ECB/PKCS5Padding")
+                    cipherECB.init(Cipher.DECRYPT_MODE, keySpec)
+                    val decrypted = cipherECB.doFinal(decodedBytes)
+                    return String(decrypted, StandardCharsets.UTF_8)
+                } catch (e: Exception) {
+                    // Ignore and try CBC fallback
+                }
+
+                // Try CBC fallback if legacy used CBC but failed earlier
+                if (decodedBytes.size >= 16) {
+                    val iv = ByteArray(16)
+                    System.arraycopy(decodedBytes, 0, iv, 0, 16)
+                    val ivSpec = IvParameterSpec(iv)
+                    val ciphertext = ByteArray(decodedBytes.size - 16)
+                    System.arraycopy(decodedBytes, 16, ciphertext, 0, ciphertext.size)
+
+                    val cipherCBC = Cipher.getInstance("AES/CBC/PKCS5Padding")
+                    cipherCBC.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
+                    val decrypted = cipherCBC.doFinal(ciphertext)
+                    return String(decrypted, StandardCharsets.UTF_8)
+                }
+            } catch (e: Exception) {
+                // Continue trying other keys
             }
+        }
+
+        // Last resort: plain decode
+        return try {
+            String(decodedBytes, StandardCharsets.UTF_8)
+        } catch (e: Exception) {
+            encryptedData
         }
     }
 }

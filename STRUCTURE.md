@@ -56,6 +56,7 @@ La estructura física de los archivos fuentes ha sido rediseñada para respetar 
 │
 ├── engine/                       # --- LÓGICA DE SIMULACIÓN Y MOTOR ---
 │   ├── GameEngine.kt             # Orquestador del ciclo de juego (ViewModel centralizado)
+│   ├── UniverseGenerator.kt      # Generación procedural del universo y creación de clubes personalizados
 │   ├── CareerManager.kt          # Gestor modular de licencias, finanzas, campañas y convocatorias nacionales
 │   ├── SocialFeedManager.kt      # Gestor modular de microblogging, decisiones de crisis y redes
 │   ├── MatchEngine.kt            # Algoritmos tácticos de simulación de partidos
@@ -90,9 +91,11 @@ La estructura física de los archivos fuentes ha sido rediseñada para respetar 
     │
     └── screens/                  # Pestañas y pantallas de juego modularizadas
         ├── OnboardingScreen.kt        # Flujo de onboarding, fundar o elegir club
+        ├── OnboardingComponents.kt    # Sub-pantallas y diálogos modulares del onboarding
         ├── ClubAndStandingsScreen.kt  # Pizarra deportiva y bitácora del universo
         ├── SquadScreen.kt             # Plantilla y panel de ojeo de futbolistas
         ├── CalendarScreen.kt          # Calendario dinámico, filtros y fixtures locales/intls
+        ├── CalendarComponents.kt      # Layouts de tarjetas de partidos y formateadores de fecha para el calendario
         ├── LiveMatchTickerScreen.kt   # Simulador de partidos en vivo minuto a minuto
         ├── SocialFeedScreen.kt        # Microblogging y widgets de toma de decisiones de crisis
         ├── ManagerCareerScreen.kt     # Finanzas personales, licencias y contratación de agentes

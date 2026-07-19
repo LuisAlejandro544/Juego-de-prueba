@@ -77,36 +77,9 @@ class GameEngine(private val context: Context) {
         // Clear previous state
         storage.clearAll()
 
-        // Generate countries (Latin America + France)
-        val generatedCountries = Country.generateUniverse()
+        // Call modular universe generator
+        val (generatedCountries, generatedLigas, allClubs) = UniverseGenerator.initializeUniverse(managerName)
         _countries.value = generatedCountries
-
-        val generatedLigas = mutableListOf<League>()
-        val allClubs = mutableListOf<Club>()
-
-        // Generate 6 clubs for each country
-        generatedCountries.forEachIndexed { countryIndex, country ->
-            val clubList = mutableListOf<Club>()
-            addNews("Generando estructura deportiva para ${country.name}...")
-
-            // 6 clubs per country
-            repeat(6) { clubIndex ->
-                val club = Club.generateProcedural(country, clubIndex, minStars = 2, maxStars = 4)
-                clubList.add(club)
-                allClubs.add(club)
-            }
-
-            val leagueName = "Liga Profesional de ${country.name}"
-            val league = League(
-                name = leagueName,
-                country = country.name,
-                visibility = LeagueVisibility.ZERO_DETAIL, // Set default detail to zero; only active selected league gets MAX_DETAIL
-                clubs = clubList
-            )
-            league.generateSchedule()
-            generatedLigas.add(league)
-        }
-
         _ligas.value = generatedLigas
         _clubs.value = allClubs
 
@@ -173,53 +146,16 @@ class GameEngine(private val context: Context) {
         _isSimulating.value = true
         addNews("Fundando club deportivo: ${customClubName}...")
 
-        val random = Random
-        val starPower = 3
-        val baseWage = (starPower * 90_000L).toLong()
-        val fanBase = (stadiumCapacity * 1.8).toLong()
-        val ticketPrice = 12
-
-        val customClub = Club(
-            name = customClubName,
-            country = countryName,
-            budget = budget,
-            wageBudget = baseWage,
+        val (updatedClubs, updatedLigas) = UniverseGenerator.startCareerWithCustomClub(
+            customClubName = customClubName,
+            countryName = countryName,
             stadiumCapacity = stadiumCapacity,
-            fanBaseSize = fanBase,
-            ticketPrice = ticketPrice,
-            trainingFacilities = starPower,
-            youthAcademy = starPower
+            budget = budget,
+            currentClubs = _clubs.value,
+            currentLigas = _ligas.value
         )
-
-        // Generate squad of 18 players
-        val minRating = 45
-        val maxRating = 72
-        repeat(2) { customClub.squad.add(Player.generateProcedural(countryName, Position.GK, minRating, maxRating)) }
-        repeat(6) { customClub.squad.add(Player.generateProcedural(countryName, Position.DEF, minRating, maxRating)) }
-        repeat(6) { customClub.squad.add(Player.generateProcedural(countryName, Position.MID, minRating, maxRating)) }
-        repeat(4) { customClub.squad.add(Player.generateProcedural(countryName, Position.ATT, minRating, maxRating)) }
-
-        // Find country league and replace its 6th club with this custom club to maintain structure
-        val league = _ligas.value.firstOrNull { it.country == countryName }
-        if (league != null) {
-            val updatedLeagueClubs = league.clubs.toMutableList()
-            if (updatedLeagueClubs.isNotEmpty()) {
-                val replacedClub = updatedLeagueClubs.removeAt(updatedLeagueClubs.size - 1)
-                _clubs.value = _clubs.value.filter { it.id != replacedClub.id } + customClub
-            } else {
-                _clubs.value = _clubs.value + customClub
-            }
-            updatedLeagueClubs.add(customClub)
-
-            // Modify league properties directly
-            val index = _ligas.value.indexOf(league)
-            val updatedLigas = _ligas.value.toMutableList()
-            updatedLigas[index] = league.copy(clubs = updatedLeagueClubs)
-            updatedLigas[index].generateSchedule() // Re-generate schedule to match the new custom club!
-            _ligas.value = updatedLigas
-        } else {
-            _clubs.value = _clubs.value + customClub
-        }
+        _clubs.value = updatedClubs
+        _ligas.value = updatedLigas
 
         // Set chosen country's league as MAX_DETAIL
         _ligas.value.forEach { l ->
@@ -230,6 +166,7 @@ class GameEngine(private val context: Context) {
             }
         }
 
+        val customClub = updatedClubs.first { it.name == customClubName }
         val mgr = Manager(
             name = managerName,
             personalWealth = 15_000L,
