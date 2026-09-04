@@ -1,5 +1,4 @@
-feat: integracion de pipeline CI en GitHub Actions para compilacion de APK Debug y automatizacion de commits
+ci: eliminar cache en compilacion de APK Debug y generar debug keystore directamente en GitHub Actions
 
-- Anadido workflow manual `build_debug_apk.yml` activable bajo demanda (workflow_dispatch) que descarga dependencias de C++, compila Rust para arquitecturas Android y empaqueta el APK Debug.
-- Integrado workflow `override_commit.yml` para sincronizacion y formateo automatico de mensajes de commit mediante `commit_message.txt`.
-- Mantenimiento estricto del soporte nativo para C++, Rust, Lua 5.4 puro y Kotlin sin sustitucion por fallbacks.
+- Modificado `build_debug_apk.yml` desactivando el cache de Gradle (`setup-java` sin cache y flags `--no-build-cache --rerun-tasks`).
+- Anadido paso para generar automaticamente `debug.keystore` con `keytool` dentro del runner de GitHub Actions para el firmado del APK Debug.

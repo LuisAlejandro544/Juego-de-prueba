@@ -21,12 +21,25 @@ jobs:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar JDK 17
+      - name: Configurar JDK 17 (Sin caché)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'gradle'
+
+      - name: Generar Keystore de depuración in-situ
+        run: |
+          echo "=== Generando debug.keystore dinámicamente ==="
+          keytool -genkey -v \
+            -keystore debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
+          ls -la debug.keystore
 
       - name: Configurar Android NDK y CMake
         uses: nttld/setup-ndk@v1
@@ -47,7 +60,6 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           chmod +x build_rust.sh
-          # Usar el NDK configurado por el action
           export NDK_PATH="${{ steps.setup-ndk.outputs.ndk-path }}"
           ./build_rust.sh
 
@@ -57,12 +69,12 @@ jobs:
             chmod +x gradlew
           fi
 
-      - name: Compilar APK Debug con Gradle (C++, Rust, Lua y Kotlin)
+      - name: Compilar APK Debug con Gradle sin caché
         run: |
           if [ -f "gradlew" ]; then
-            ./gradlew assembleDebug --stacktrace
+            ./gradlew assembleDebug --no-build-cache --rerun-tasks --stacktrace
           else
-            gradle assembleDebug --stacktrace
+            gradle assembleDebug --no-build-cache --rerun-tasks --stacktrace
           fi
 
       - name: Subir APK Debug como artefacto
