@@ -1,0 +1,100 @@
+# ==========================================
+# Archivos de Sistema y Entorno Operativo
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Tt]humbs.db
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# ==========================================
+# Secretos, Credenciales y Entorno (.env)
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.jks
+*.keystore
+debug.keystore
+debug.keystore.base64
+my-upload-key.jks
+google-services.json
+
+# ==========================================
+# Android & Gradle Build System
+# ==========================================
+*.iml
+.gradle/
+.kotlin/
+build/
+/build/
+app/build/
+*/build/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+
+# ==========================================
+# IDEs (Android Studio, IntelliJ, VS Code)
+# ==========================================
+.idea/
+*.iws
+*.ipr
+out/
+.vscode/
+
+# ==========================================
+# C / C++ / CMake Artifacts
+# ==========================================
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+!app/src/main/jniLibs/**/*.a
+*.lib
+*.exp
+*.ilk
+*.pdb
+*.gch
+*.d
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile.cmake
+install_manifest.txt
+compile_commands.json
+
+# ==========================================
+# Rust & Cargo Artifacts
+# ==========================================
+target/
+app/src/main/rust/target/
+**/target/
+**/*.rs.bk
+Cargo.lock.bak
+
+# ==========================================
+# Lua Bytecode & Caches
+# ==========================================
+*.luac
+luac.out
+*.luajit
+.luarocks/
+
+# ==========================================
+# Crash Logs & Diagnósticos
+# ==========================================
+hs_err_pid*
+replay_pid*
+*.log

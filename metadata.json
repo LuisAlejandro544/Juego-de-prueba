@@ -1,0 +1,6 @@
+{
+  "name": "Tactical SWAT",
+  "description": "Tactical CQB strategy game controlling a SWAT team with field of view, doors, inventory, and enemies in landscape mode",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

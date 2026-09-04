@@ -1,0 +1,11 @@
+/build/
+.cxx/
+.externalNativeBuild/
+CMakeFiles/
+CMakeCache.txt
+*.o
+*.obj
+*.so
+target/
+*.luac
+luac.out
