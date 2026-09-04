@@ -1,6 +1,6 @@
 # Estructura del Proyecto (Architecture & Directory Layout)
 
-Este documento describe la organización de carpetas, responsabilidades de cada módulo y el flujo de datos entre las capas de Kotlin, C++, Rust y Lua.
+Este documento describe la organización de carpetas, responsabilidades de cada módulo y el flujo de datos entre las capas de Kotlin, C++, Rust y Lua, así como la infraestructura de integración continua (CI/CD).
 
 ---
 
@@ -8,9 +8,13 @@ Este documento describe la organización de carpetas, responsabilidades de cada 
 
 ```
 /
+├── .github/
+│   └── workflows/
+│       ├── build_debug_apk.yml       # Action manual (workflow_dispatch) para compilar APK Debug
+│       └── override_commit.yml       # Action para reescribir mensajes de commit desde commit_message.txt
 ├── app/
-│   ├── build.gradle.kts          # Configuración del módulo Android, NDK, CMake y dependencias
-│   ├── proguard-rules.pro        # Reglas de ofuscación y mantenimiento de clases JNI
+│   ├── build.gradle.kts              # Configuración del módulo Android, NDK, CMake y dependencias
+│   ├── proguard-rules.pro            # Reglas de ofuscación y mantenimiento de clases JNI
 │   └── src/
 │       ├── main/
 │       │   ├── AndroidManifest.xml   # Manifiesto de Android (modo horizontal configurado)
@@ -57,6 +61,7 @@ Este documento describe la organización de carpetas, responsabilidades de cada 
 ├── gradle/
 │   └── libs.versions.toml            # Catálogo centralizado de versiones y dependencias
 ├── build_rust.sh                     # Script para compilar el código Rust para los ABIs de Android
+├── commit_message.txt                # Mensaje en español para sobrescritura controlada de commits
 ├── .gitignore                        # Reglas completas para no subir archivos de C++, Rust, CMake, Kotlin y Lua
 ├── README.md                         # Descripción general e instrucciones del proyecto
 ├── ROADMAP.md                        # Planificación de fases y desarrollo futuro
@@ -76,3 +81,6 @@ Este documento describe la organización de carpetas, responsabilidades de cada 
    - C++ enlaza las funciones de Rust (`swat_rust_engine`) para cálculos de alto rendimiento y física vectorial.
    - C++ aloja la máquina virtual de Lua 5.4 para ejecutar scripts y eventos en tiempo real.
 4. **Renderizado (Jetpack Compose Canvas)**: El estado reactivo actualizado se dibuja en pantalla con aceleración por hardware en formato apaisado.
+5. **Canal CI/CD de Automatización**:
+   - `build_debug_apk.yml`: Pipeline reproducible que orquesta la compilación en contenedores Ubuntu con Android NDK, Rust y Gradle, generando el APK Debug bajo demanda.
+   - `override_commit.yml`: Guardián de la bitácora que alinea el mensaje del último commit con `commit_message.txt`.

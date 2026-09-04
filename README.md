@@ -29,7 +29,7 @@ El proyecto incorpora una arquitectura híbrida con **Kotlin + Jetpack Compose**
 
 - **Android SDK**: API 24 (Android 7.0) o superior (Target SDK: 36).
 - **Gradle**: 9.0+.
-- **Android NDK**: 25.2.9519653+.
+- **Android NDK**: 25.2.9519653+ (r25c).
 - **CMake**: 3.22.1+.
 - **Rust Toolchain (Opcional para recompilar Rust)**: Rustc 1.70+ con los targets de Android (`aarch64-linux-android`, `armv7-linux-androideabi`, `x86_64-linux-android`).
 
@@ -37,8 +37,15 @@ El proyecto incorpora una arquitectura híbrida con **Kotlin + Jetpack Compose**
 
 ## Compilación y Ejecución
 
-### 1. Compilar el APK de Android
-Para generar el APK de desarrollo:
+### 1. Compilación Manual en GitHub Actions (APK Debug)
+El repositorio incluye el flujo de trabajo automatizado `.github/workflows/build_debug_apk.yml` que:
+- Se activa de forma **100% manual** desde la pestaña **Actions** -> **Build Debug APK** -> **Run workflow**.
+- Descarga el código y configura JDK 17, Android NDK r25c y CMake 3.22.1.
+- Configura el compilador de Rust con los 3 targets de Android y compila las librerías nativas con `./build_rust.sh`.
+- Ejecuta `gradle assembleDebug` para empaquetar el APK Debug con C++, Rust, Lua y Kotlin.
+- Sube el archivo `.apk` resultante como artefacto descargable directo (`tactical-swat-debug-apk`).
+
+### 2. Compilar el APK de Forma Local
 ```bash
 gradle assembleDebug
 ```
@@ -47,15 +54,20 @@ El archivo generado se ubicará en:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### 2. Ejecutar Pruebas Unitarias
+### 3. Ejecutar Pruebas Unitarias
 ```bash
 gradle :app:testDebugUnitTest
 ```
 
-### 3. Recompilar el Módulo Rust (Si se realizan cambios en Rust)
+### 4. Recompilar el Módulo Rust (Si se realizan cambios en Rust)
 ```bash
 ./build_rust.sh
 ```
+
+---
+
+## Automatización de Mensajes de Commit
+El proyecto incluye el workflow `.github/workflows/override_commit.yml` que, ante cada push a las ramas `main` o `master`, lee el contenido de `commit_message.txt` (siempre redactado en español) y reescribe automáticamente el último commit para mantener una bitácora impecable.
 
 ---
 

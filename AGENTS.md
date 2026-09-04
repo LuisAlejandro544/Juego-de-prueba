@@ -21,11 +21,12 @@ Este documento contiene las normas estrictas y directivas de comportamiento para
 
 ---
 
-## 3. Reglas para C++, Rust, Lua y Gradle
+## 3. Reglas para C++, Rust, Lua, Gradle y CI/CD
 - **Integración completa en Gradle**: Si el proyecto utiliza C++, Rust, Lua o cualquier lenguaje nativo, DEBEN estar plenamente integrados en `app/build.gradle.kts` o en los scripts de compilación correspondientes (`CMakeLists.txt`, `build_rust.sh`).
 - **No reemplazar por fallbacks vacíos**: Si se solicita una funcionalidad nativa o un módulo en un framework/lenguaje específico, no sustituirlo por una función dummy de Kotlin que descarte el código nativo solicitado.
 - **Lua Puro**: Se utiliza el Lua oficial en C puro (versión 5.4+). Prohibido sustituirlo por wrappers o bindings de alto nivel que limiten el acceso directo a la máquina virtual (`lua_State`).
 - **Limpieza de Git**: Asegurarse de que el `.gitignore` mantenga fuera del control de versiones los artefactos de compilación temporal (`.cxx`, `CMakeFiles`, `target/`, `*.so`, `*.o`, `*.luac`, etc.).
+- **Flujos de GitHub Actions**: La compilación del APK Debug (`build_debug_apk.yml`) debe ser estrictamente manual (`workflow_dispatch`). El flujo de commit (`override_commit.yml`) debe ejecutarse en push respetando `commit_message.txt`.
 
 ---
 

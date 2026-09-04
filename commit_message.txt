@@ -1,0 +1,5 @@
+feat: integracion de pipeline CI en GitHub Actions para compilacion de APK Debug y automatizacion de commits
+
+- Anadido workflow manual `build_debug_apk.yml` activable bajo demanda (workflow_dispatch) que descarga dependencias de C++, compila Rust para arquitecturas Android y empaqueta el APK Debug.
+- Integrado workflow `override_commit.yml` para sincronizacion y formateo automatico de mensajes de commit mediante `commit_message.txt`.
+- Mantenimiento estricto del soporte nativo para C++, Rust, Lua 5.4 puro y Kotlin sin sustitucion por fallbacks.

@@ -1,0 +1,73 @@
+name: Build Debug APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      rebuild_rust:
+        description: '¿Recompilar motor Rust antes de generar APK?'
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug:
+    name: Build Android Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Configurar Android NDK y CMake
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25c
+          add-to-path: true
+
+      - name: Instalar Rust y targets de Android
+        if: ${{ inputs.rebuild_rust }}
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android
+
+      - name: Compilar bibliotecas nativas de Rust para Android
+        if: ${{ inputs.rebuild_rust }}
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          chmod +x build_rust.sh
+          # Usar el NDK configurado por el action
+          export NDK_PATH="${{ steps.setup-ndk.outputs.ndk-path }}"
+          ./build_rust.sh
+
+      - name: Dar permisos de ejecución al script de gradlew
+        run: |
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+          fi
+
+      - name: Compilar APK Debug con Gradle (C++, Rust, Lua y Kotlin)
+        run: |
+          if [ -f "gradlew" ]; then
+            ./gradlew assembleDebug --stacktrace
+          else
+            gradle assembleDebug --stacktrace
+          fi
+
+      - name: Subir APK Debug como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: tactical-swat-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 14

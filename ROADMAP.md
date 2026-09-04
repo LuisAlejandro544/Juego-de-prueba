@@ -1,6 +1,6 @@
 # Hoja de Ruta del Proyecto (Roadmap)
 
-Este documento detalla los hitos completados y los siguientes pasos en la evolución del juego táctico SWAT y su mini motor nativo.
+Este documento detalla los hitos completados y los siguientes pasos en la evolución del juego táctico SWAT, su mini motor nativo y los procesos de CI/CD.
 
 ---
 
@@ -17,13 +17,15 @@ Este documento detalla los hitos completados y los siguientes pasos en la evoluc
 
 ---
 
-## Fase 2: Infraestructura Nativa Multi-Lenguaje [COMPLETADO]
+## Fase 2: Infraestructura Nativa Multi-Lenguaje y CI/CD [COMPLETADO]
 - [x] Integración de **Android NDK** y **CMake 3.22** en `app/build.gradle.kts`.
 - [x] Inclusión de las fuentes originales y puras de **Lua 5.4.7** en C (`lapi.c`, `lvm.c`, etc.) compiladas directamente sin wrappers.
 - [x] Creación del crate de **Rust** (`swat_rust_engine`) con funciones exportadas en C-ABI para distancia, matemáticas y FOV.
 - [x] Compilación multiplataforma de Rust para `arm64-v8a`, `armeabi-v7a` y `x86_64`.
 - [x] Puente JNI en C++ (`swat_native_bridge.cpp`) conectando Kotlin con Lua y Rust.
 - [x] Clase puente `NativeEngineBridge.kt` y pruebas unitarias automáticas con Robolectric.
+- [x] **GitHub Actions para APK Debug**: Workflow manual `build_debug_apk.yml` (`workflow_dispatch`) con compilación automatizada de C++, Rust, Lua y entrega de APK como artefacto.
+- [x] **GitHub Actions para Sobrescritura de Commits**: Workflow `override_commit.yml` sincronizado con `commit_message.txt` en español.
 
 ---
 
