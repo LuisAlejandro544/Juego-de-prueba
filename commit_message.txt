@@ -2,3 +2,4 @@ ci: eliminar cache en compilacion de APK Debug y generar debug keystore directam
 
 - Modificado `build_debug_apk.yml` desactivando el cache de Gradle (`setup-java` sin cache y flags `--no-build-cache --rerun-tasks`).
 - Anadido paso para generar automaticamente `debug.keystore` con `keytool` dentro del runner de GitHub Actions para el firmado del APK Debug.
+- Corregida la ruta absoluta de generacion de `debug.keystore` usando `$GITHUB_WORKSPACE` para resolver el fallo de `:app:validateSigningDebug` en runners de CI.

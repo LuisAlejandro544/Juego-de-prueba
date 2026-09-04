@@ -27,11 +27,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Generar Keystore de depuración in-situ
+      - name: Generar Keystore de depuración in-situ en rootDir
         run: |
-          echo "=== Generando debug.keystore dinámicamente ==="
+          echo "=== Generando debug.keystore dinámicamente en raíz del proyecto ==="
           keytool -genkey -v \
-            -keystore debug.keystore \
+            -keystore "$GITHUB_WORKSPACE/debug.keystore" \
             -alias androiddebugkey \
             -keyalg RSA \
             -keysize 2048 \
@@ -39,7 +39,9 @@ jobs:
             -storepass android \
             -keypass android \
             -dname "CN=Android Debug,O=Android,C=US"
-          ls -la debug.keystore
+          # Asegurar copia también en la carpeta app/ por si Gradle evalúa paths relativos
+          cp "$GITHUB_WORKSPACE/debug.keystore" "$GITHUB_WORKSPACE/app/debug.keystore"
+          ls -la "$GITHUB_WORKSPACE/debug.keystore" "$GITHUB_WORKSPACE/app/debug.keystore"
 
       - name: Configurar Android NDK y CMake
         uses: nttld/setup-ndk@v1
